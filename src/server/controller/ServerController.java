@@ -1,6 +1,9 @@
 package server.controller;
 
+import shared.Client;
 import shared.Server;
+import shared.Token;
+import shared.UserCredential;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -44,12 +47,17 @@ public class ServerController extends UnicastRemoteObject implements Server {
     }
 
     @Override
-    public void login(String username) {
-
+    public Token login(UserCredential uc, Client client) {
+        return null;
     }
 
     @Override
     public void quit() {
+
+    }
+
+    @Override
+    public void register(UserCredential uc, Client client) {
 
     }
 }
