@@ -7,6 +7,7 @@ public interface Server {
     void startGame();
     void listLobbies();
     void listPlayers();
-    void login(String username);
+    Token login(String username);
     void quit();
+    void register(UserCredential uc, Client client);
 }
