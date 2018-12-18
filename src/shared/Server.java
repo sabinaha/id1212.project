@@ -1,12 +1,13 @@
 package shared;
 
 public interface Server {
-    void createLobby(LobbyDTO lobbyDTO);
+    void createLobby(String lobbyName);
     void joinLobby(String lobbyName);
     void leaveLobby();
     void startGame();
     void listLobbies();
     void listPlayers();
-    void login(String username);
+    Token login(UserCredential uc, Client client);
     void quit();
+    void register(UserCredential uc, Client client);
 }

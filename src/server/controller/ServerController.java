@@ -1,6 +1,5 @@
 package server.controller;
 
-import shared.LobbyDTO;
 import shared.Server;
 
 import java.rmi.RemoteException;
