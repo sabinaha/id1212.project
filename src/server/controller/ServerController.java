@@ -14,7 +14,7 @@ public class ServerController extends UnicastRemoteObject implements Server {
     }
 
     @Override
-    public void createLobby(LobbyDTO lobbyDTO) {
+    public void createLobby(String lobbyName) {
 
     }
 

@@ -16,6 +16,7 @@ public class ClientController implements Client {
     public Scanner sc = new Scanner(System.in);
     volatile private String me;
     private String PROMPT = ">";
+    private Token token;
 
     /**
      * Will start the connection to the server and hold the connection running.
