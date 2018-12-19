@@ -4,6 +4,7 @@ import server.exceptions.IncorrectCredentialsException;
 import server.exceptions.UserAlreadyExistsException;
 import server.integration.DB;
 import server.model.User;
+import server.model.UserManager;
 import shared.*;
 
 import java.rmi.RemoteException;
@@ -12,51 +13,56 @@ import java.rmi.server.UnicastRemoteObject;
 public class ServerController extends UnicastRemoteObject implements Server {
 
     public static String SERVER_REGISTRY_NAMESPACE = "SNELL_SERVER";
+    private UserManager userManager = new UserManager();
 
     public ServerController() throws RemoteException {
         System.out.println("Starting server");
     }
 
     @Override
-    public void createLobby(String lobbyName) {
+    public void createLobby(String lobbyName) throws RemoteException {
 
     }
 
     @Override
-    public void joinLobby(String lobbyName) {
+    public void joinLobby(String lobbyName) throws RemoteException {
 
     }
 
     @Override
-    public void leaveLobby() {
+    public void leaveLobby() throws RemoteException {
 
     }
 
     @Override
-    public void startGame() {
+    public void startGame() throws RemoteException {
 
     }
 
     @Override
-    public void listLobbies() {
+    public void listLobbies() throws RemoteException {
 
     }
 
     @Override
-    public void listPlayers() {
+    public void listPlayers() throws RemoteException {
 
     }
 
     @Override
-    public Token login(UserCredential uc, Client client) {
+    public Token login(UserCredential uc, Client client) throws RemoteException {
         System.out.println("[SERVER] login");
+        Token token = null;
         try {
             DB.getDB().login(uc);
+            token = userManager.addUser(uc.getUsername(), client);
         } catch (IncorrectCredentialsException e) {
             e.printStackTrace();
             client.receiveResponse(Response.LOGIN_INCORRECT_CRED);
+            return null;
         }
-        return null;
+        client.receiveResponse(Response.LOGIN_SUCCESSFUL);
+        return token;
     }
 
     @Override
@@ -65,7 +71,7 @@ public class ServerController extends UnicastRemoteObject implements Server {
     }
 
     @Override
-    public void register(UserCredential uc, Client client) {
+    public void register(UserCredential uc, Client client) throws RemoteException {
         System.out.println("[SERVER] register");
         try {
             DB.getDB().registerUser(uc);
@@ -77,7 +83,7 @@ public class ServerController extends UnicastRemoteObject implements Server {
     }
 
     @Override
-    public void choose(Weapon weapon) {
+    public void choose(Weapon weapon) throws RemoteException {
 
     }
 }

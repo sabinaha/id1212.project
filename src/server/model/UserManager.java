@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class UserManager {
 
     Map<Long, User> players = new ConcurrentHashMap();
-    private Object idLock = null;
+    private Object idLock = new Object();
     private static int playerID = 0;
 
     public Token addUser(String newUser, Client clientRef) {
