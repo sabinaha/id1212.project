@@ -26,6 +26,10 @@ public class UserManager {
         return token;
     }
 
+    synchronized public boolean hasUser(Token token) {
+        return players.containsKey(token.getId());
+    }
+
     synchronized public User getUserByToken(Token token) {
         return players.get(token.getId());
     }

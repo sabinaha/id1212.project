@@ -1,9 +1,6 @@
 package server.controller;
 
-import server.exceptions.IncorrectCredentialsException;
-import server.exceptions.LobbyAlreadyExistsException;
-import server.exceptions.LobbyDontExistException;
-import server.exceptions.UserAlreadyExistsException;
+import server.exceptions.*;
 import server.integration.DB;
 import server.model.LobbyManager;
 import server.model.User;
@@ -24,8 +21,21 @@ public class ServerController extends UnicastRemoteObject implements Server {
         System.out.println("Starting server");
     }
 
+    private void assertLoggedIn(Token token) throws UserNotLoggedInException {
+        if (token == null)
+            throw new UserNotLoggedInException();
+        if (userManager.hasUser(token))
+            throw new UserNotLoggedInException();
+    }
+
     @Override
     public void createLobby(String lobbyName, Token token) throws RemoteException {
+        try {
+            assertLoggedIn(token);
+        } catch (UserNotLoggedInException e) {
+            System.out.println("throwing");
+            throw new RemoteException("You must be logged in", e);
+        }
         User user = userManager.getUserByToken(token);
         try {
             lobbyManager.createNewLobby(lobbyName, user);

@@ -1,6 +1,7 @@
 package client.controller;
 
 import server.controller.ServerController;
+import server.exceptions.UserNotLoggedInException;
 import shared.*;
 
 import java.rmi.NotBoundException;
@@ -93,6 +94,8 @@ public class ClientController extends UnicastRemoteObject implements Client {
             }
         } catch (RemoteException e) {
             e.printStackTrace();
+            if (e.getCause().getCause() instanceof UserNotLoggedInException)
+                System.out.println("OHHOO");
         }
     }
 
