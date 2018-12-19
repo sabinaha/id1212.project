@@ -21,11 +21,16 @@ public class ServerController extends UnicastRemoteObject implements Server {
         System.out.println("Starting server");
     }
 
+    /**
+     * Asserts that the user is logged in.
+     * @param token The token to identify the user by.
+     * @throws UserNotLoggedInException If the user is not loeed
+     */
     private void assertLoggedIn(Token token) throws UserNotLoggedInException {
         if (token == null)
-            throw new UserNotLoggedInException();
-        if (userManager.hasUser(token))
-            throw new UserNotLoggedInException();
+            throw new UserNotLoggedInException("Token was null");
+        if (!userManager.hasUser(token))
+            throw new UserNotLoggedInException("No such user is registred in userManager");
     }
 
     @Override
