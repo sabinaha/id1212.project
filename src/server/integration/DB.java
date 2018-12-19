@@ -42,6 +42,11 @@ public class DB {
             e.printStackTrace();
         }
     }
+
+    public static DB getDB() {
+        return database;
+    }
+
     private String[] get_DBCredentials() {
         List<String> lines = null;
         try {

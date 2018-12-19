@@ -1,5 +1,9 @@
 package server.controller;
 
+import server.exceptions.IncorrectCredentialsException;
+import server.exceptions.UserAlreadyExistsException;
+import server.integration.DB;
+import server.model.User;
 import shared.*;
 
 import java.rmi.RemoteException;
@@ -45,6 +49,12 @@ public class ServerController extends UnicastRemoteObject implements Server {
 
     @Override
     public Token login(UserCredential uc, Client client) {
+        try {
+            DB.getDB().login(uc);
+        } catch (IncorrectCredentialsException e) {
+            e.printStackTrace();
+            client.receiveResponse(Response.LOGIN_INCORRECT_CRED);
+        }
         return null;
     }
 
@@ -55,7 +65,13 @@ public class ServerController extends UnicastRemoteObject implements Server {
 
     @Override
     public void register(UserCredential uc, Client client) {
-
+        try {
+            DB.getDB().registerUser(uc);
+        } catch (UserAlreadyExistsException e) {
+            e.printStackTrace();
+            client.receiveResponse(Response.REG_DUPL_USERNAME);
+        }
+        client.receiveResponse(Response.REG_SUCCESSFUL);
     }
 
     @Override

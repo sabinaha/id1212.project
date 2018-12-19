@@ -174,4 +174,9 @@ public class ClientController extends UnicastRemoteObject implements Client {
     public void displayServerInfo(ServerInfo serverInfo) {
 
     }
+
+    @Override
+    public void receiveResponse(Response response) {
+        System.out.println("[DEV]: " + response);
+    }
 }
