@@ -1,6 +1,8 @@
 package shared;
 
-public class GameInfo {
+import java.io.Serializable;
+
+public class GameInfo implements Serializable {
     private int roundScore;
     private int totalScore;
 

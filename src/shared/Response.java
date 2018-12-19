@@ -1,6 +1,8 @@
 package shared;
 
-public enum Response {
+import java.io.Serializable;
+
+public enum Response implements Serializable {
     // LOGIN
     LOGIN_SUCCESSFUL,
     LOGIN_INCORRECT_CRED,
