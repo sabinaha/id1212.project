@@ -2,6 +2,7 @@ package client.controller;
 
 import server.controller.ServerController;
 import shared.*;
+import shared.Object;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -161,17 +162,7 @@ public class ClientController extends UnicastRemoteObject implements Client {
     }
 
     @Override
-    public void displayLobbyInfo(LobbyInfo lobbyInfo) {
-        
-    }
-
-    @Override
-    public void displayGameInfo(GameInfo gameInfo) {
-
-    }
-
-    @Override
-    public void displayServerInfo(ServerInfo serverInfo) {
+    public void displayInfo(Object object) {
 
     }
 
