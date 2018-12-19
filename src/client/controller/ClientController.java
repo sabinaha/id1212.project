@@ -64,6 +64,7 @@ public class ClientController extends UnicastRemoteObject implements Client {
                     System.out.println("Please fill out the name of the lobby down below.");
                     String lobbyName = lobbyInfo();
                     server.createLobby(lobbyName, token);
+                    gameState();
                     break;
                 case "join":
                     System.out.println("Please state which lobby you want to join down below");
@@ -74,12 +75,6 @@ public class ClientController extends UnicastRemoteObject implements Client {
                 case "register":
                     uc = userInfo();
                     server.register(uc, this);
-                    break;
-                case "players":
-                    LobbyInfo players = server.listPlayers(token);
-                    for (String s : players.getUsersInLobby()) {
-                        System.out.println(s);
-                    }
                     break;
                 case "lobbies":
                     server.listLobbies(token);
@@ -136,10 +131,15 @@ public class ClientController extends UnicastRemoteObject implements Client {
                 System.out.println("==== RULES ====");
                 displayRules();
                 break;
+            case "players":
+                LobbyInfo players = server.listPlayers(token);
+                for (String s : players.getUsersInLobby()) {
+                    System.out.println(s);
+                }
+                break;
             default:
                 System.out.println("That is not a recognized command");
                 displayGameHelp();
-
         }
     }
 
