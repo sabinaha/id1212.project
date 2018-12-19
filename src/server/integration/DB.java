@@ -1,8 +1,10 @@
 package server.integration;
 
+import server.exceptions.GetStatsException;
 import server.exceptions.IncorrectCredentialsException;
 import server.exceptions.UpdateStatsException;
 import server.exceptions.UserAlreadyExistsException;
+import shared.UserCredential;
 
 import java.io.File;
 import java.io.IOException;
@@ -126,14 +128,14 @@ public class DB {
             throw new IncorrectCredentialsException(e);
         }
     }
-    public void updateWin(String username){
+    public void updateWin(String username) throws UpdateStatsException {
         updateStats(username, true);
     }
-    public void updateLoss(String username){
+    public void updateLoss(String username) throws UpdateStatsException {
         updateStats(username, false);
     }
 
-    public void updateStats(String username, Boolean isWin) throws UpdateStatsException {
+    private void updateStats(String username, Boolean isWin) throws UpdateStatsException {
         PreparedStatement ps;
         String query;
         if (isWin) {
@@ -148,6 +150,39 @@ public class DB {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new UpdateStatsException(e);
+        }
+
+    }
+
+    public int getWins(String username) throws GetStatsException {
+        return getStats(username, true);
+    }
+    public int getloss(String username) throws GetStatsException {
+        return getStats(username, false);
+    }
+
+    private int getStats(String username, boolean isWin) throws GetStatsException {
+        PreparedStatement ps;
+        ResultSet rs;
+        String query;
+        if (isWin) {
+            query = ("SELECT wins FROM stats WHERE userID = (SELECT id FROM user WHERE username = ?");
+        }else{
+            query = ("SELECT losses FROM stats WHERE userID = (SELECT id FROM user WHERE username = ?");
+        }
+
+        try {
+            ps = connection.prepareStatement(query);
+            ps.setString(1, username);
+            rs = ps.executeQuery();
+
+            if (!rs.next()){
+                throw new GetStatsException();
+            }
+            return rs.getInt(0);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new GetStatsException(e);
         }
 
     }
