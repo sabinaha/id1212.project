@@ -79,7 +79,6 @@ public class ClientController extends UnicastRemoteObject implements Client {
                     break;
                 case "quit":
                     server.quit(this.token);
-                    this.me = null;
                     this.token = null;
                     break;
                 case "help":
