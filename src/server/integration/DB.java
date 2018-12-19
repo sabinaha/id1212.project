@@ -162,7 +162,7 @@ public class DB {
     public int getWins(String username) throws GetStatsException {
         return getStats(username, true);
     }
-    public int getloss(String username) throws GetStatsException {
+    public int getLoss(String username) throws GetStatsException {
         return getStats(username, false);
     }
 
