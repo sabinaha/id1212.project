@@ -63,12 +63,12 @@ public class ClientController extends UnicastRemoteObject implements Client {
                 case "create":
                     System.out.println("Please fill out the name of the lobby down below.");
                     String lobbyName = lobbyInfo();
-                    server.createLobby(lobbyName);
+                    server.createLobby(lobbyName, token);
                     break;
                 case "join":
                     System.out.println("Please state which lobby you want to join down below");
                     String lobby = lobbyInfo();
-                    server.joinLobby(lobby);
+                    server.joinLobby(lobby, token);
                     gameState();
                     break;
                 case "register":
@@ -76,10 +76,10 @@ public class ClientController extends UnicastRemoteObject implements Client {
                     server.register(uc, this);
                     break;
                 case "players":
-                    server.listPlayers();
+                    server.listPlayers(token);
                     break;
                 case "lobbies":
-                    server.listLobbies();
+                    server.listLobbies(token);
                     break;
                 case "quit":
                     server.quit(this.token);
@@ -108,19 +108,19 @@ public class ClientController extends UnicastRemoteObject implements Client {
     private void parseGameCmd(String cmd) throws RemoteException {
         switch (cmd) {
             case "start":
-                server.startGame();
+                server.startGame(token);
                 break;
             case "rock":
-                server.choose(Weapon.ROCK);
+                server.choose(Weapon.ROCK, token);
                 break;
             case "paper":
-                server.choose(Weapon.PAPER);
+                server.choose(Weapon.PAPER, token);
                 break;
             case "scissors":
-                server.choose(Weapon.SCISSORS);
+                server.choose(Weapon.SCISSORS, token);
                 break;
             case "leave":
-                server.leaveLobby();
+                server.leaveLobby(token);
                 break;
         }
     }

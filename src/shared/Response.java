@@ -13,6 +13,12 @@ public enum Response implements Serializable {
     REG_DUPL_USERNAME,
     REG_FAILED,
 
+    //
+    LOBBY_CREATE_SUCCESS,
+    LOBBY_JOIN_SUCCESS,
+    LOBBY_ALREADY_EXISTS,
+    LOBBY_DONT_EXISTS,
+
     // MISC
     UNKNOWN_ERROR
 }

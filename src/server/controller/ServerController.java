@@ -1,52 +1,69 @@
 package server.controller;
 
 import server.exceptions.IncorrectCredentialsException;
+import server.exceptions.LobbyAlreadyExistsException;
 import server.exceptions.UserAlreadyExistsException;
 import server.integration.DB;
+import server.model.LobbyManager;
 import server.model.User;
 import server.model.UserManager;
 import shared.*;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 
 public class ServerController extends UnicastRemoteObject implements Server {
 
     public static String SERVER_REGISTRY_NAMESPACE = "SNELL_SERVER";
     private UserManager userManager = new UserManager();
+    private LobbyManager lobbyManager = new LobbyManager();
 
     public ServerController() throws RemoteException {
         System.out.println("Starting server");
     }
 
     @Override
-    public void createLobby(String lobbyName) throws RemoteException {
+    public void createLobby(String lobbyName, Token token) throws RemoteException {
+        User user = userManager.getUserByToken(token);
+        try {
+            lobbyManager.createNewLobby(lobbyName, user);
+        } catch (LobbyAlreadyExistsException e) {
+            e.printStackTrace();
+            userManager.getClientRef(token).receiveResponse(Response.LOBBY_ALREADY_EXISTS);
+        }
+        userManager.getClientRef(token).receiveResponse(Response.LOBBY_CREATE_SUCCESS);
+    }
+
+    @Override
+    public void joinLobby(String lobbyName, Token token) throws RemoteException {
 
     }
 
     @Override
-    public void joinLobby(String lobbyName) throws RemoteException {
+    public void leaveLobby(Token token) throws RemoteException {
 
     }
 
     @Override
-    public void leaveLobby() throws RemoteException {
+    public void startGame(Token token) throws RemoteException {
 
     }
 
     @Override
-    public void startGame() throws RemoteException {
-
+    public ServerInfo listLobbies(Token token) throws RemoteException {
+        return null;
     }
 
     @Override
-    public void listLobbies() throws RemoteException {
-
-    }
-
-    @Override
-    public void listPlayers() throws RemoteException {
-
+    public LobbyInfo listPlayers(Token token) throws RemoteException {
+        // AUTH=???
+        User user = userManager.getUserByToken(token);
+        ArrayList<String> usernames = new ArrayList<>();
+        for (User lobbyUser : lobbyManager.getLobby(user).getUserList()) {
+            usernames.add(lobbyUser.getUsername());
+        }
+        return new LobbyInfo(usernames);
     }
 
     @Override
@@ -83,7 +100,7 @@ public class ServerController extends UnicastRemoteObject implements Server {
     }
 
     @Override
-    public void choose(Weapon weapon) throws RemoteException {
+    public void choose(Weapon weapon, Token token) throws RemoteException {
 
     }
 }

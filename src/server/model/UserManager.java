@@ -25,4 +25,12 @@ public class UserManager {
         players.put(token.getId(), user);
         return token;
     }
+
+    synchronized public User getUserByToken(Token token) {
+        return players.get(token.getId());
+    }
+
+    synchronized public Client getClientRef(Token token) {
+        return players.get(token.getId()).getClientRef();
+    }
 }
