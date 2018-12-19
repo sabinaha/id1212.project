@@ -11,6 +11,8 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 
+import static shared.Response.*;
+
 public class ClientController extends UnicastRemoteObject implements Client {
 
     private Server server;
@@ -197,6 +199,15 @@ public class ClientController extends UnicastRemoteObject implements Client {
 
     @Override
     public void receiveResponse(Response response) {
-        System.out.println("[DEV]: " + response);
+        String s = "";
+        switch (response) {
+            case LOGIN_SUCCESSFUL:
+                s = "Login successful!";
+                break;
+            case LOBBY_CREATE_SUCCESS:
+                s = "Lobby was successfully created!";
+                break;
+        }
+        System.out.println(">> " + s + " <<");
     }
 }
