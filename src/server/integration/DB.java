@@ -22,10 +22,10 @@ public class DB {
         final String URL;
         final String driver;
         if (osName.equals("Windows 10")) {
-            URL = "jdbc:mysql://localhost:3306/rmi_db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+            URL = "jdbc:mysql://localhost:3306/RPS?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
             driver = "com.mysql.cj.jdbc.Driver";
         } else {
-            URL = "jdbc:mysql://localhost:8889/rmi_db?autoReconnect=true&useSSL=false";
+            URL = "jdbc:mysql://localhost:8889/RPS?autoReconnect=true&useSSL=false";
             driver = "com.mysql.jdbc.Driver";
         }
 
