@@ -76,7 +76,10 @@ public class ClientController extends UnicastRemoteObject implements Client {
                     server.register(uc, this);
                     break;
                 case "players":
-                    server.listPlayers(token);
+                    LobbyInfo players = server.listPlayers(token);
+                    for (String s : players.getUsersInLobby()) {
+                        System.out.println(s);
+                    }
                     break;
                 case "lobbies":
                     server.listLobbies(token);
@@ -87,9 +90,11 @@ public class ClientController extends UnicastRemoteObject implements Client {
                     this.token = null;
                     break;
                 case "help":
-                    String msg = displayHelp();
-                    System.out.println(msg);
+                    displayHelp();
                     break;
+                default:
+                    System.out.println("That is not a recognized command!");
+                    displayHelp();
             }
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -122,6 +127,19 @@ public class ClientController extends UnicastRemoteObject implements Client {
             case "leave":
                 server.leaveLobby(token);
                 break;
+            case "quit":
+                server.quit(this.token);
+                this.me = null;
+                this.token = null;
+                break;
+            case "rules":
+                System.out.println("==== RULES ====");
+                displayRules();
+                break;
+            default:
+                System.out.println("That is not a recognized command");
+                displayGameHelp();
+
         }
     }
 
@@ -129,12 +147,24 @@ public class ClientController extends UnicastRemoteObject implements Client {
      * Display the commands that the user can write in the command line.
      * @return returns the help string to the user.
      */
-    private String displayHelp(){
-        String help = "Here are the commands you may write:\n 'login' to login\n" +
+    private void displayHelp(){
+        System.out.println("==== HELP ====\nHere are the commands you may write:\n 'login' to login\n" +
                 "'create' to create lobby\n'join' to join a lobby\n'register' to register a new user\n" +
                 "'players' to list all players in a lobby\n 'lobbies' to list all lobbies\n" +
-                "'quit' to quit the game";
-        return help;
+                "'quit' to quit the game");
+    }
+
+    private void displayGameHelp(){
+        System.out.println("==== GAME HELP ====\nHere are the commands you may write:\n 'start' to start game\n" +
+                "'rock' to choose rock as your weapon\n'paper' to choose paper as your weapon\n" +
+                "'scissors' to choose scissors as your weapon\n" +
+                "'quit' to quit the game\n'rules' to show the rules for the game");
+    }
+
+    private void displayRules() {
+        System.out.println("When the game starts, please select rock, paper or scissors by writing 'rock', 'paper', 'scissors\n" +
+                "You will receive one point for every player you beat. If everyone picks the same 'weapon', the score" +
+                "will be 0\nHave fun!");
     }
 
     /**
