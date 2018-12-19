@@ -91,6 +91,9 @@ public class ClientController extends UnicastRemoteObject implements Client {
         } catch (RemoteException e) {
             if (e.getCause().getCause() instanceof UserNotLoggedInException)
                 System.out.println("--- You have to be logged in, in order to do this. ---");
+            else {
+                e.printStackTrace();
+            }
         }
     }
 
