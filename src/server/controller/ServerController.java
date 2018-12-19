@@ -49,6 +49,7 @@ public class ServerController extends UnicastRemoteObject implements Server {
 
     @Override
     public Token login(UserCredential uc, Client client) {
+        System.out.println("[SERVER] login");
         try {
             DB.getDB().login(uc);
         } catch (IncorrectCredentialsException e) {
@@ -65,6 +66,7 @@ public class ServerController extends UnicastRemoteObject implements Server {
 
     @Override
     public void register(UserCredential uc, Client client) {
+        System.out.println("[SERVER] register");
         try {
             DB.getDB().registerUser(uc);
         } catch (UserAlreadyExistsException e) {
