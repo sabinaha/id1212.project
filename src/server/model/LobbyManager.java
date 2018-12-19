@@ -15,6 +15,7 @@ public class LobbyManager {
         if (lobbies.containsKey(name))
             throw new LobbyAlreadyExistsException();
         lobbies.put(name, new Lobby(name, creator));
+        creator.setLobby(name);
     }
 
     synchronized public void deleteLobby(String name) {
@@ -33,9 +34,10 @@ public class LobbyManager {
         if (!lobbies.containsKey(lobby))
             throw new LobbyDontExistException();
         lobbies.get(lobby).addUser(user);
+        user.setLobby(lobby);
     }
 
-    public Lobby getLobby(User user) {
-        return lobbies.get(user.getUsername());
+    synchronized public Lobby getLobby(User user) {
+        return lobbies.get(user.getLobby());
     }
 }
