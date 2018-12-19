@@ -20,7 +20,7 @@ CREATE TABLE `user` (
   `id` int(6) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(30) NOT NULL,
   `password` varchar(30) NOT NULL,
-  `reg_date` timestamp NULL DEFAULT NULL,
+  `reg_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
