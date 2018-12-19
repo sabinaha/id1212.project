@@ -8,6 +8,6 @@ public interface Server {
     void listLobbies();
     void listPlayers();
     Token login(UserCredential uc, Client client);
-    void quit();
+    void quit(Token token);
     void register(UserCredential uc, Client client);
 }

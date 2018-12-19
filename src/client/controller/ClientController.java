@@ -29,7 +29,8 @@ public class ClientController implements Client {
 
             // Program loop
             while(connected){
-
+                String cmd = sc.nextLine();
+                parseInput(cmd);
             }
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
@@ -49,6 +50,10 @@ public class ClientController implements Client {
 
     }
 
+    /**
+     * Client will send different prompts to the server depending on the input
+     * @param cmd the command that the user wants to execute
+     */
     public void parseInput (String cmd) {
         UserCredential uc = null;
         switch (cmd) {
@@ -77,7 +82,11 @@ public class ClientController implements Client {
             case "lobbies":
                 break;
             case "quit":
-
+                if(!loggedIn(this.token))
+                    return;
+                server.quit(this.token);
+                this.me = null;
+                this.token = null;
                 break;
             case "leave":
                 break;
@@ -110,5 +119,16 @@ public class ClientController implements Client {
         System.out.print("Lobby name: ");
         String lobby = sc.nextLine();
         return lobby;
+    }
+
+    private boolean loggedIn(Token token) {
+        boolean loggedIn;
+        if (token == null) {
+            System.out.println("You have to be logged in!");
+            loggedIn = false;
+            return loggedIn;
+        }
+        loggedIn = true;
+        return loggedIn;
     }
 }
