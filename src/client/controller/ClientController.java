@@ -16,7 +16,6 @@ public class ClientController extends UnicastRemoteObject implements Client {
     private Server server;
     private boolean connected = true;
     public Scanner sc = new Scanner(System.in);
-    volatile private String me;
     private String PROMPT = ">> ";
     private Token token;
 
@@ -58,8 +57,6 @@ public class ClientController extends UnicastRemoteObject implements Client {
                 case "login":
                     uc = userInfo();
                     token = server.login(uc, this);
-                    if (token != null)
-                        this.me = uc.getUsername();
                     break;
                 case "create":
                     System.out.println("Please fill out the name of the lobby down below.");
@@ -126,7 +123,6 @@ public class ClientController extends UnicastRemoteObject implements Client {
                 break;
             case "quit":
                 server.quit(this.token);
-                this.me = null;
                 this.token = null;
                 break;
             case "rules":
