@@ -50,7 +50,7 @@ public class DB {
     private String[] get_DBCredentials() {
         List<String> lines = null;
         try {
-            lines = Files.readAllLines(Paths.get(".."+ File.separator+ "db_credentials.txt"));
+            lines = Files.readAllLines(Paths.get(".." + File.separator + "db_credentials.txt"));
         } catch (IOException e) {
             System.out.println("Could not read read word from file.");
             e.printStackTrace();

@@ -17,7 +17,7 @@ public class Token implements Serializable {
         return this.id;
     }
 
-    @Override
+/*    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Token))
             return false;
@@ -25,5 +25,5 @@ public class Token implements Serializable {
         if (compareTo.getId() != this.id)
             return false;
         return true;
-    }
+    }*/
 }
