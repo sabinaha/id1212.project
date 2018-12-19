@@ -7,16 +7,20 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 
-public class ClientController implements Client {
+public class ClientController extends UnicastRemoteObject implements Client {
 
     private Server server;
     private boolean connected = true;
     public Scanner sc = new Scanner(System.in);
     volatile private String me;
-    private String PROMPT = ">";
+    private String PROMPT = ">>";
     private Token token;
+
+    public ClientController() throws RemoteException {
+    }
 
     /**
      * Will start the connection to the server and hold the connection running.
@@ -25,10 +29,11 @@ public class ClientController implements Client {
         try {
             Registry registry = LocateRegistry.getRegistry(null);
             server = (Server) registry.lookup(ServerController.SERVER_REGISTRY_NAMESPACE);
-            System.out.println("Rock paper scissors");
+            System.out.println("Rock-paper-scissors");
 
             // Program loop
             while(connected){
+                showPrompt();
                 String cmd = sc.nextLine();
                 parseInput(cmd);
             }
@@ -37,17 +42,8 @@ public class ClientController implements Client {
         }
     }
 
-    @Override
-    public void displayLobbyInfo(LobbyInfo lobbyInfo) {
-
-    }
-
-    public void displayGameInfo(GameInfo gameinfo) {
-
-    }
-
-    public void displayServerInfo(ServerInfo serverInfo) {
-
+    private void showPrompt() {
+        System.out.print(PROMPT);
     }
 
     /**
@@ -72,23 +68,22 @@ public class ClientController implements Client {
                 System.out.println("Please state which lobby you want to join down below");
                 String lobby = lobbyInfo();
                 server.joinLobby(lobby);
+                gameState();
                 break;
             case "register":
                 uc = userInfo();
                 server.register(uc, this);
                 break;
             case "players":
+                server.listPlayers();
                 break;
             case "lobbies":
+                server.listLobbies();
                 break;
             case "quit":
-                if(!loggedIn(this.token))
-                    return;
                 server.quit(this.token);
                 this.me = null;
                 this.token = null;
-                break;
-            case "leave":
                 break;
             case "help":
                 String msg = displayHelp();
@@ -98,14 +93,51 @@ public class ClientController implements Client {
         }
     }
 
+    private void gameState() {
+        boolean inGame = true;
+        while (inGame) {
+            showPrompt();
+            String cmd = sc.nextLine();
+            parseGameCmd(cmd);
+        }
+    }
+
+    private void parseGameCmd(String cmd) {
+        switch (cmd) {
+            case "start":
+                server.startGame();
+                break;
+            case "rock":
+                server.choose(Weapon.ROCK);
+                break;
+            case "paper":
+                server.choose(Weapon.PAPER);
+                break;
+            case "scissors":
+                server.choose(Weapon.SCISSORS);
+                break;
+            case "leave":
+                server.leaveLobby();
+                break;
+        }
+    }
+
+    /**
+     * Display the commands that the user can write in the command line.
+     * @return returns the help string to the user.
+     */
     private String displayHelp(){
         String help = "Here are the commands you may write:\n 'login' to login\n" +
                 "'create' to create lobby\n'join' to join a lobby\n'register' to register a new user\n" +
                 "'players' to list all players in a lobby\n 'lobbies' to list all lobbies\n" +
-                "'quit' to quit the game\n 'leave' to leave the lobby";
+                "'quit' to quit the game";
         return help;
     }
 
+    /**
+     * When the user wants to add their user credentials this method is called.
+     * @return Returns the user credential as an object.
+     */
     private UserCredential userInfo() {
         System.out.print("Username: ");
         String usr = sc.nextLine();
@@ -115,20 +147,28 @@ public class ClientController implements Client {
         return new UserCredential(usr, pw);
     }
 
+    /**
+     * When the user wants to add lobby information, this method is called.
+     * @return returns the string of which holds the lobby name.
+     */
     private String lobbyInfo() {
         System.out.print("Lobby name: ");
         String lobby = sc.nextLine();
         return lobby;
     }
 
-    private boolean loggedIn(Token token) {
-        boolean loggedIn;
-        if (token == null) {
-            System.out.println("You have to be logged in!");
-            loggedIn = false;
-            return loggedIn;
-        }
-        loggedIn = true;
-        return loggedIn;
+    @Override
+    public void displayLobbyInfo(LobbyInfo lobbyInfo) {
+        
+    }
+
+    @Override
+    public void displayGameInfo(GameInfo gameInfo) {
+
+    }
+
+    @Override
+    public void displayServerInfo(ServerInfo serverInfo) {
+
     }
 }

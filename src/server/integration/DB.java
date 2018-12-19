@@ -3,6 +3,7 @@ package server.integration;
 import server.exceptions.IncorrectCredentialsException;
 import server.exceptions.UpdateStatsException;
 import server.exceptions.UserAlreadyExistsException;
+import shared.UserCredential;
 
 import java.io.File;
 import java.io.IOException;
@@ -126,10 +127,10 @@ public class DB {
             throw new IncorrectCredentialsException(e);
         }
     }
-    public void updateWin(String username){
+    public void updateWin(String username) throws UpdateStatsException {
         updateStats(username, true);
     }
-    public void updateLoss(String username){
+    public void updateLoss(String username) throws UpdateStatsException {
         updateStats(username, false);
     }
 

@@ -10,4 +10,5 @@ public interface Server {
     Token login(UserCredential uc, Client client);
     void quit(Token token);
     void register(UserCredential uc, Client client);
+    void choose (Weapon weapon);
 }
