@@ -2,6 +2,7 @@ package server.controller;
 
 import server.exceptions.IncorrectCredentialsException;
 import server.exceptions.LobbyAlreadyExistsException;
+import server.exceptions.LobbyDontExistException;
 import server.exceptions.UserAlreadyExistsException;
 import server.integration.DB;
 import server.model.LobbyManager;
@@ -31,13 +32,22 @@ public class ServerController extends UnicastRemoteObject implements Server {
         } catch (LobbyAlreadyExistsException e) {
             e.printStackTrace();
             userManager.getClientRef(token).receiveResponse(Response.LOBBY_ALREADY_EXISTS);
+            return;
         }
         userManager.getClientRef(token).receiveResponse(Response.LOBBY_CREATE_SUCCESS);
     }
 
     @Override
     public void joinLobby(String lobbyName, Token token) throws RemoteException {
-
+        User user = userManager.getUserByToken(token);
+        try {
+            lobbyManager.joinLobby(lobbyName, user);
+        } catch (LobbyDontExistException e) {
+            e.printStackTrace();
+            userManager.getClientRef(token).receiveResponse(Response.LOBBY_JOIN_FAILED);
+            return;
+        }
+        userManager.getClientRef(token).receiveResponse(Response.LOBBY_JOIN_SUCCESS);
     }
 
     @Override

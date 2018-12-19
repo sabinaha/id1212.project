@@ -30,6 +30,11 @@ public class LobbyManager {
         return list;
     }
 
+    synchronized void leaveLobby(User user) {
+        lobbies.get(user.getLobby()).removeUser(user);
+        user.setLobby(null);
+    }
+
     synchronized public void joinLobby(String lobby, User user) throws LobbyDontExistException {
         if (!lobbies.containsKey(lobby))
             throw new LobbyDontExistException();

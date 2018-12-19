@@ -16,6 +16,7 @@ public enum Response implements Serializable {
     //
     LOBBY_CREATE_SUCCESS,
     LOBBY_JOIN_SUCCESS,
+    LOBBY_JOIN_FAILED,
     LOBBY_ALREADY_EXISTS,
     LOBBY_DONT_EXISTS,
 
