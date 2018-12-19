@@ -91,8 +91,9 @@ public class ClientController extends UnicastRemoteObject implements Client {
                     displayHelp();
             }
         } catch (RemoteException e) {
-            if (e.getCause().getCause() instanceof UserNotLoggedInException)
+            if (e.getCause().getCause() instanceof UserNotLoggedInException){
                 System.out.println("--- You have to be logged in, in order to do this. ---");
+            }
             else {
                 e.printStackTrace();
             }
@@ -206,6 +207,18 @@ public class ClientController extends UnicastRemoteObject implements Client {
                 break;
             case LOBBY_CREATE_SUCCESS:
                 s = "Lobby was successfully created!";
+                break;
+            case LOBBY_ALREADY_EXISTS:
+                s = "Lobby already exists, try joining it or create a new one.";
+                break;
+            case LOBBY_JOIN_SUCCESS:
+                s = "Joining the lobby was successful!";
+                break;
+            case LOBBY_JOIN_FAILED:
+                s = "Could not connect to the lobby";
+                break;
+            case LOBBY_DONT_EXISTS:
+                s = "That lobby does not exists";
                 break;
         }
         System.out.println(">> " + s + " <<");
