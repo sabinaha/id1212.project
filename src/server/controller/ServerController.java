@@ -59,7 +59,11 @@ public class ServerController extends UnicastRemoteObject implements Server {
             lobbyManager.joinLobby(lobbyName, user);
         } catch (LobbyDontExistException e) {
             e.printStackTrace();
-            userManager.getClientRef(token).receiveResponse(Response.LOBBY_JOIN_FAILED);
+            userManager.getClientRef(token).receiveResponse(Response.LOBBY_DONT_EXISTS);
+            return;
+        } catch (GameOngoingException e) {
+            e.printStackTrace();
+            userManager.getClientRef(token).receiveResponse(Response.LOBBY_GAME_ONGOING_ERROR);
             return;
         }
         userManager.getClientRef(token).receiveResponse(Response.LOBBY_JOIN_SUCCESS);

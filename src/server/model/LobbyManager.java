@@ -1,5 +1,6 @@
 package server.model;
 
+import server.exceptions.GameOngoingException;
 import server.exceptions.LobbyAlreadyExistsException;
 import server.exceptions.LobbyDontExistException;
 
@@ -35,7 +36,7 @@ public class LobbyManager {
         user.setLobby(null);
     }
 
-    synchronized public void joinLobby(String lobby, User user) throws LobbyDontExistException {
+    synchronized public void joinLobby(String lobby, User user) throws LobbyDontExistException, GameOngoingException {
         if (!lobbies.containsKey(lobby))
             throw new LobbyDontExistException();
         lobbies.get(lobby).addUser(user);

@@ -19,6 +19,7 @@ public enum Response implements Serializable {
     LOBBY_JOIN_FAILED, //Måste tas hand om som ett exception, om ingen är inloggad
     LOBBY_ALREADY_EXISTS,
     LOBBY_DONT_EXISTS,
+    LOBBY_GAME_ONGOING_ERROR,
 
     // MISC
     UNKNOWN_ERROR
