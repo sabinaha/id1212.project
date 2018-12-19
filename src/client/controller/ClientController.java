@@ -52,48 +52,51 @@ public class ClientController extends UnicastRemoteObject implements Client {
      */
     public void parseInput (String cmd) {
         UserCredential uc = null;
-        switch (cmd) {
-            case "login":
-                uc = userInfo();
-                token = server.login(uc, this);
-                if (token != null)
-                    this.me = uc.getUsername();
-                break;
-            case "create":
-                System.out.println("Please fill out the name of the lobby down below.");
-                String lobbyName = lobbyInfo();
-                server.createLobby(lobbyName);
-                break;
-            case "join":
-                System.out.println("Please state which lobby you want to join down below");
-                String lobby = lobbyInfo();
-                server.joinLobby(lobby);
-                gameState();
-                break;
-            case "register":
-                uc = userInfo();
-                server.register(uc, this);
-                break;
-            case "players":
-                server.listPlayers();
-                break;
-            case "lobbies":
-                server.listLobbies();
-                break;
-            case "quit":
-                server.quit(this.token);
-                this.me = null;
-                this.token = null;
-                break;
-            case "help":
-                String msg = displayHelp();
-                System.out.println(msg);
-                break;
-
+        try {
+            switch (cmd) {
+                case "login":
+                    uc = userInfo();
+                    token = server.login(uc, this);
+                    if (token != null)
+                        this.me = uc.getUsername();
+                    break;
+                case "create":
+                    System.out.println("Please fill out the name of the lobby down below.");
+                    String lobbyName = lobbyInfo();
+                    server.createLobby(lobbyName);
+                    break;
+                case "join":
+                    System.out.println("Please state which lobby you want to join down below");
+                    String lobby = lobbyInfo();
+                    server.joinLobby(lobby);
+                    gameState();
+                    break;
+                case "register":
+                    uc = userInfo();
+                    server.register(uc, this);
+                    break;
+                case "players":
+                    server.listPlayers();
+                    break;
+                case "lobbies":
+                    server.listLobbies();
+                    break;
+                case "quit":
+                    server.quit(this.token);
+                    this.me = null;
+                    this.token = null;
+                    break;
+                case "help":
+                    String msg = displayHelp();
+                    System.out.println(msg);
+                    break;
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 
-    private void gameState() {
+    private void gameState() throws RemoteException {
         boolean inGame = true;
         while (inGame) {
             showPrompt();
@@ -102,7 +105,7 @@ public class ClientController extends UnicastRemoteObject implements Client {
         }
     }
 
-    private void parseGameCmd(String cmd) {
+    private void parseGameCmd(String cmd) throws RemoteException {
         switch (cmd) {
             case "start":
                 server.startGame();
