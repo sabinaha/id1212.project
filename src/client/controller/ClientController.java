@@ -2,7 +2,6 @@ package client.controller;
 
 import server.controller.ServerController;
 import shared.*;
-import shared.Object;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
