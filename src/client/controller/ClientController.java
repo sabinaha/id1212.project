@@ -16,7 +16,7 @@ public class ClientController extends UnicastRemoteObject implements Client {
     private boolean connected = true;
     public Scanner sc = new Scanner(System.in);
     volatile private String me;
-    private String PROMPT = ">>";
+    private String PROMPT = ">> ";
     private Token token;
 
     public ClientController() throws RemoteException {
