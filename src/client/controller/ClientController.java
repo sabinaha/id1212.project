@@ -79,12 +79,41 @@ public class ClientController extends UnicastRemoteObject implements Client {
                 case "lobbies":
                     server.listLobbies(token);
                     break;
+                case "help":
+                    displayHelp();
+                    break;
+                case "start":
+                    server.startGame(token);
+                    break;
+                case "rock":
+                    server.choose(Weapon.ROCK, token);
+                    break;
+                case "paper":
+                    server.choose(Weapon.PAPER, token);
+                    break;
+                case "scissors":
+                    server.choose(Weapon.SCISSORS, token);
+                    break;
+                case "leave":
+                    server.leaveLobby(token);
+                    inGame = false;
+                    break;
                 case "quit":
                     server.quit(this.token);
                     this.token = null;
                     break;
-                case "help":
-                    displayHelp();
+                case "rules":
+                    System.out.println("==== RULES ====");
+                    displayRules();
+                    break;
+                case "players":
+                    LobbyInfo players = server.listPlayers(token);
+                    if (players == null){
+                        return;
+                    }
+                    for (String s : players.getUsersInLobby()) {
+                        System.out.println(s);
+                    }
                     break;
                 default:
                     System.out.println("That is not a recognized command!");
@@ -93,6 +122,10 @@ public class ClientController extends UnicastRemoteObject implements Client {
         } catch (RemoteException e) {
             if (e.getCause().getCause() instanceof UserNotLoggedInException){
                 System.out.println("--- You have to be logged in, in order to do this. ---");
+            } else if (e.getCause().getCause() instanceof NotInLobbyException) {
+                System.out.println("--- You have to be in a lobby to do that! ---");
+            } else if (e.getCause().getCause() instanceof NotInGameException) {
+                System.out.println("--- You have to be in a game to do that ---");
             }
             else {
                 e.printStackTrace();
@@ -101,83 +134,23 @@ public class ClientController extends UnicastRemoteObject implements Client {
     }
 
     /**
-     * If the user is in a lobby, they will not be able to write specific commands like "login". This method checks
-     * to see if the user is in a lobby.
-     * @throws RemoteException
-     */
-    private void gameState() throws RemoteException {
-        inGame = true;
-        while (inGame) {
-            showPrompt();
-            String cmd = sc.nextLine();
-            parseGameCmd(cmd);
-        }
-    }
-
-    /**
-     * The commands which the user can write when in a lobby/game will be parsed here and sent to the corresponding
-     * method in the server.
-     * @param cmd The command which the user has written.
-     */
-    private void parseGameCmd(String cmd) throws RemoteException {
-        switch (cmd) {
-            case "start":
-                server.startGame(token);
-                break;
-            case "rock":
-                server.choose(Weapon.ROCK, token);
-                break;
-            case "paper":
-                server.choose(Weapon.PAPER, token);
-                break;
-            case "scissors":
-                server.choose(Weapon.SCISSORS, token);
-                break;
-            case "leave":
-                server.leaveLobby(token);
-                inGame = false;
-                break;
-            case "quit":
-                server.quit(this.token);
-                this.token = null;
-                break;
-            case "rules":
-                System.out.println("==== RULES ====");
-                displayRules();
-                break;
-            case "players":
-                LobbyInfo players = server.listPlayers(token);
-                if (players == null){
-                    return;
-                }
-                for (String s : players.getUsersInLobby()) {
-                    System.out.println(s);
-                }
-                break;
-            default:
-                System.out.println("That is not a recognized command");
-                displayGameHelp();
-        }
-    }
-
-    /**
      * Display the commands that the user can write in the command line.
      */
     private void displayHelp(){
-        System.out.println("==== HELP ====\nHere are the commands you may write:\n 'login' to login\n" +
+        System.out.println("==== HELP ====\nHere are the commands you may write:\n'login' to login\n" +
                 "'create' to create lobby\n'join' to join a lobby\n'register' to register a new user\n" +
-                "'players' to list all players in a lobby\n 'lobbies' to list all lobbies\n" +
-                "'quit' to quit the game");
+                "'players' to list all players in a lobby\n'lobbies' to list all lobbies\n" +
+                "'quit' to quit the game\n'start' to start game" +
+                "\n'rock' to choose rock as your weapon\n'paper' to choose paper as your weapon" +
+                "\n'scissors' to choose scissors as your weapon" +
+                "\n'rules' to show the rules for the game");
     }
 
     /**
      * The method will be called when the user wants help when in a lobby/game.
      */
     private void displayGameHelp(){
-        System.out.println("==== GAME HELP ====\nHere are the commands you may write:\n 'start' to start game\n" +
-                "'rock' to choose rock as your weapon\n'paper' to choose paper as your weapon\n" +
-                "'scissors' to choose scissors as your weapon\n" +
-                "'quit' to quit the game\n'rules' to show the rules for the game");
+        System.out.println("==== GAME HELP ====\nHere are the commands you may write:");
     }
 
     /**
@@ -224,36 +197,30 @@ public class ClientController extends UnicastRemoteObject implements Client {
     @Override
     public void receiveResponse(Response response) {
         String s = "";
-        try {
-            switch (response) {
-                case LOGIN_SUCCESSFUL:
-                    s = "Login successful!";
-                    break;
-                case LOBBY_CREATE_SUCCESS:
-                    s = "Lobby was successfully created!";
-                    gameState();
-                    break;
-                case LOBBY_ALREADY_EXISTS:
-                    s = "Lobby already exists, try joining it or create a new one.";
-                    break;
-                case LOBBY_JOIN_SUCCESS:
-                    s = "Joining the lobby was successful!";
-                    gameState();
-                    break;
-                case LOBBY_JOIN_FAILED:
-                    s = "Could not connect to the lobby";
-                    break;
-                case LOBBY_DONT_EXISTS:
-                    s = "That lobby does not exists";
-                    break;
-                case LOBBY_USER_NOT_IN_LOBBY:
-                    s = "There are no players in the lobby.";
-                default:
-                    s = response.toString();
-            }
-            System.out.println(">> " + s + " <<");
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        switch (response) {
+            case LOGIN_SUCCESSFUL:
+                s = "Login successful!";
+                break;
+            case LOBBY_CREATE_SUCCESS:
+                s = "Lobby was successfully created!";
+                break;
+            case LOBBY_ALREADY_EXISTS:
+                s = "Lobby already exists, try joining it or create a new one.";
+                break;
+            case LOBBY_JOIN_SUCCESS:
+                s = "Joining the lobby was successful!";
+                break;
+            case LOBBY_JOIN_FAILED:
+                s = "Could not connect to the lobby";
+                break;
+            case LOBBY_DONT_EXISTS:
+                s = "That lobby does not exists";
+                break;
+            case LOBBY_USER_NOT_IN_LOBBY:
+                s = "There are no players in the lobby.";
+            default:
+                s = response.toString();
         }
+            System.out.println(">> " + s + " <<");
     }
 }
