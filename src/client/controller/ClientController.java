@@ -103,11 +103,11 @@ public class ClientController extends UnicastRemoteObject implements Client {
                     break;
                 case "leave":
                     server.leaveLobby(token);
-                    inGame = false;
                     break;
                 case "quit":
                     server.quit(this.token);
                     this.token = null;
+                    connected = false;
                     break;
                 case "rules":
                     System.out.println("==== RULES ====");
