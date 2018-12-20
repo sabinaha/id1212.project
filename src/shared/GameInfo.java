@@ -5,36 +5,30 @@ import java.io.Serializable;
 public class GameInfo implements Serializable {
     public enum State {WON, LOST, DRAW}
 
-    private int roundScore;
-    private int totalScore;
-    private int round;
-    private int ofRounds;
-    private State state;
-    private boolean gameIsDone;
+    private final int roundScore;
+    private final int totalScore;
+    private final int round;
+    private final int ofRounds;
+    private final State state;
+    private final boolean gameIsDone;
+    private final State finalResult;
 
-    public GameInfo (int roundScore, int totalScore, int round, int ofRounds, State state, boolean gameIsDone) {
+    public GameInfo (int roundScore, int totalScore, int round, int ofRounds, State state, boolean gameIsDone, State finalResult) {
         this.roundScore = roundScore;
         this.totalScore = totalScore;
         this.round = round;
         this.ofRounds = ofRounds;
         this.state = state;
         this.gameIsDone = gameIsDone;
+        this.finalResult = finalResult;
     }
 
     public int getRoundScore() {
         return roundScore;
     }
 
-    public void setRoundScore(int roundScore) {
-        this.roundScore = roundScore;
-    }
-
     public int getTotalScore() {
         return totalScore;
-    }
-
-    public void setTotalScore(int totalScore) {
-        this.totalScore = totalScore;
     }
 
     public int getRound() {
@@ -51,6 +45,10 @@ public class GameInfo implements Serializable {
 
     public boolean isGameIsDone() {
         return gameIsDone;
+    }
+
+    public State getFinalResult() {
+        return finalResult;
     }
 
     @Override

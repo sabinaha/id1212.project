@@ -150,7 +150,9 @@ public class Game {
                     break;
             }
             System.out.println("PUTTING");
-            gameStates.put(user, new GameInfo(roundScore, totalScore, round, ofRounds, state, (roundsPlayed + 1) == ROUNDS));
+            GameInfo.State didIWin = determineWinners().containsKey(user) ? GameInfo.State.WON : GameInfo.State.LOST;
+            didIWin = determineWinners().size() > 1 ? GameInfo.State.DRAW : didIWin;
+            gameStates.put(user, new GameInfo(roundScore, totalScore, round, ofRounds, state, (roundsPlayed + 1) == ROUNDS, didIWin));
         }
     }
 

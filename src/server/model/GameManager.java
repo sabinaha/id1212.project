@@ -34,14 +34,6 @@ public class GameManager {
         return games.get(lobby).isGameFinished();
     }
 
-    synchronized public ArrayList<User> userWhoMadeTheirMoves(Lobby lobby) {
-        return games.get(lobby).userWhoMadeTheirMoves();
-    }
-
-    synchronized public HashMap<User, Integer> determineWinners(Lobby lobby) {
-        return games.get(lobby).determineWinners();
-    }
-
     synchronized public boolean isStartOfRound(Lobby lobby) {
         return games.get(lobby).userWhoMadeTheirMoves().size() == 0;
     }
