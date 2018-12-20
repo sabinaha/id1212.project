@@ -79,7 +79,12 @@ public class ClientController extends UnicastRemoteObject implements Client {
                     server.register(uc, this);
                     break;
                 case "lobbies":
-                    server.listLobbies(token);
+                    ServerInfo lobbies = server.listLobbies(token);
+                    if (lobbies == null)
+                        return;
+                    for (String l : lobbies.getLobbyNames()) {
+                        System.out.println("• " + l);
+                    }
                     break;
                 case "help":
                     displayHelp();
@@ -114,7 +119,7 @@ public class ClientController extends UnicastRemoteObject implements Client {
                         return;
                     }
                     for (String s : players.getUsersInLobby()) {
-                        System.out.println(s);
+                        System.out.println("• " + s);
                     }
                     break;
                 default:
@@ -146,13 +151,6 @@ public class ClientController extends UnicastRemoteObject implements Client {
                 "\n'rock' to choose rock as your weapon\n'paper' to choose paper as your weapon" +
                 "\n'scissors' to choose scissors as your weapon" +
                 "\n'rules' to show the rules for the game");
-    }
-
-    /**
-     * The method will be called when the user wants help when in a lobby/game.
-     */
-    private void displayGameHelp(){
-        System.out.println("==== GAME HELP ====\nHere are the commands you may write:");
     }
 
     /**
@@ -220,6 +218,13 @@ public class ClientController extends UnicastRemoteObject implements Client {
                 break;
             case LOBBY_USER_NOT_IN_LOBBY:
                 s = "There are no players in the lobby.";
+                break;
+            case LOBBY_LEAVE_SUCCESSFUL:
+                s = "Leaving lobby was successful!";
+                break;
+            case LOBBY_GAME_ONGOING_ERROR:
+                s = "A game is already ongoing, you can't join at the moment. Try again later!";
+                break;
             default:
                 s = response.toString();
         }
