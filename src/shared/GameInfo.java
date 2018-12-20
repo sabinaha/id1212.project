@@ -34,4 +34,16 @@ public class GameInfo implements Serializable {
     public void setTotalScore(int totalScore) {
         this.totalScore = totalScore;
     }
+
+    public int getRound() {
+        return round;
+    }
+
+    public int getOfRounds() {
+        return ofRounds;
+    }
+
+    public State getState() {
+        return state;
+    }
 }

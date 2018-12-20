@@ -204,7 +204,33 @@ public class ClientController extends UnicastRemoteObject implements Client {
 
     @Override
     public void displayInfo(Object object) {
+        if (object instanceof GameInfo) {
+            String s = "";
+            GameInfo gameInfo = (GameInfo) object;
+            switch (gameInfo.getState()) {
+                case WON:
+                    s = "You won!";
+                    break;
+                case LOST:
+                    s = "You lost!";
+                    break;
+                case DRAW:
+                    s = "It's a draw";
+                    break;
+            }
+            String info = printGameInfo(gameInfo);
+            System.out.println(info + s);
+        }
+    }
 
+    private String printGameInfo(GameInfo gameInfo) {
+        int roundScore = gameInfo.getRoundScore();
+        int totalScore = gameInfo.getTotalScore();
+        int currentRound = gameInfo.getRound();
+        int totalRounds = gameInfo.getOfRounds();
+
+        String s = currentRound + " out of " + totalRounds + "\nRound score: " + roundScore + "\nTotal score: " + totalScore + "\n";
+        return s;
     }
 
     /**
