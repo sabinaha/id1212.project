@@ -111,7 +111,17 @@ public class ClientController extends UnicastRemoteObject implements Client {
                     displayRules();
                     break;
                 case "players":
-
+                    listPlayersInLobby();
+                    break;
+                case "a":
+                    UserCredential a = new UserCredential("a", "a");
+                    token = server.login(a, this);
+                    server.createLobby("banana", token);
+                    break;
+                case "b":
+                    UserCredential b = new UserCredential("b", "b");
+                    token = server.login(b, this);
+                    server.joinLobby("banana", token);
                     break;
                 default:
                     System.out.println("That is not a recognized command!");
