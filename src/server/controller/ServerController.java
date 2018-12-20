@@ -8,8 +8,6 @@ import shared.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ServerController extends UnicastRemoteObject implements Server {
 
@@ -119,12 +117,18 @@ public class ServerController extends UnicastRemoteObject implements Server {
         Lobby lobby = lobbyManager.getLobby(user);
         gameManager.startGame(lobby);
         userManager.getClientRef(token).receiveResponse(Response.GAME_STARTED);
-        promptUsersForAction(lobby);
+        postRoundTasks(lobby);
     }
 
-    private void promptUsersForAction(Lobby lobby) throws RemoteException {
+    private void postRoundTasks(Lobby lobby) throws RemoteException {
         ArrayList<User> userlist = new ArrayList<>(lobby.getUserList());
-        if (gameManager.userWhoMadeTheirMoves(lobby).size() == 0) {
+        if (gameManager.userWhoMadeTheirMoves(lobby).size() == 0) { // If we're inside of here, it's the end of a round
+
+            for (User user : lobby.getUserList()) {
+                GameInfo gameInfo = gameManager.getGameState(lobby, user);
+                userManager.getClientRef(user.getToken()).displayInfo(gameInfo);
+            }
+
             for (User moveUser : userlist)
                 userManager.getClientRef(moveUser.getToken()).receiveResponse(Response.GAME_PROMPT_ACTION);
         }
@@ -145,7 +149,7 @@ public class ServerController extends UnicastRemoteObject implements Server {
         if (gameManager.gameIsOver(lobby)) {
             postGameInfo(lobby);
         } else {
-            promptUsersForAction(lobby);
+            postRoundTasks(lobby);
         }
     }
 

@@ -1,5 +1,6 @@
 package server.model;
 
+import shared.GameInfo;
 import shared.Weapon;
 
 import java.util.ArrayList;
@@ -7,11 +8,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static shared.Weapon.PAPER;
+import static shared.Weapon.ROCK;
+
 public class Game {
     private Lobby lobby;
-    private Map<User, Integer> userRoundPoints = new ConcurrentHashMap();
-    private Map<User, Integer> userTotalPoints = new ConcurrentHashMap<>();
-    private Map<User, Weapon> moveList = new ConcurrentHashMap<>();
+    private Map<User, Integer> userRoundPoints = new HashMap<>();
+    private Map<User, Integer> userTotalPoints = new HashMap<>();
+    private Map<User, Weapon> moveList = new HashMap<>();
+    private Map<User, GameInfo> gameStates = new HashMap<>();
     private int roundsToPlay;
     private int roundsPlayed;
 
@@ -31,7 +36,7 @@ public class Game {
         moveList.put(user, weapon);
         synchronized (this) {
             if (moveList.size() == userTotalPoints.size()) {
-                rewardPlayers();
+                calculateRound();
                 roundsPlayed++;
             }
         }
@@ -62,9 +67,10 @@ public class Game {
         userRoundPoints.remove(user);
         userTotalPoints.remove(user);
         moveList.remove(user);
+        gameStates.remove(user);
     }
 
-    private void rewardPlayers(){
+    private void calculateRound(){
         for (User user : lobby.getUserList()){ //Reset round rewards
             userRoundPoints.put(user, 0);
         }
@@ -104,7 +110,46 @@ public class Game {
             }
             givePoints(user, points);
         }
+        buildGameInfos();
         moveList.clear();
+    }
+
+    private void buildGameInfos() {
+        for (Map.Entry<User, GameInfo> entry : gameStates.entrySet()) {
+            User user = entry.getKey();
+            int roundScore, totalScore, round = roundsPlayed, ofRounds = ROUNDS;
+            roundScore = userRoundPoints.get(user);
+            totalScore = userTotalPoints.get(user);
+            GameInfo.State state = null;
+            Weapon weapon = moveList.get(user);
+            switch (weapon) {
+                case ROCK:
+                    if (moveList.containsValue(Weapon.SCISSORS))
+                        state = GameInfo.State.WON;
+                    else if (moveList.containsValue(Weapon.PAPER))
+                        state = GameInfo.State.LOST;
+                    else
+                        state = GameInfo.State.DRAW;
+                    break;
+                case PAPER:
+                    if (moveList.containsValue(ROCK))
+                        state = GameInfo.State.WON;
+                    else if (moveList.containsValue(Weapon.SCISSORS))
+                        state = GameInfo.State.LOST;
+                    else
+                        state = GameInfo.State.DRAW;
+                    break;
+                case SCISSORS:
+                    if (moveList.containsValue(PAPER))
+                        state = GameInfo.State.WON;
+                    else if (moveList.containsValue(ROCK))
+                        state = GameInfo.State.LOST;
+                    else
+                        state = GameInfo.State.DRAW;
+                    break;
+            }
+            gameStates.put(user, new GameInfo(roundScore, totalScore, round, ofRounds, state));
+        }
     }
 
     private void givePoints(User user, int points){
@@ -122,4 +167,7 @@ public class Game {
     }
 
 
+    public GameInfo getGameState(User user) {
+        return gameStates.get(user);
+    }
 }

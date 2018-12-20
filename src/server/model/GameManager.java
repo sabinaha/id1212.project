@@ -1,5 +1,6 @@
 package server.model;
 
+import shared.GameInfo;
 import shared.Weapon;
 
 import java.util.ArrayList;
@@ -21,12 +22,14 @@ public class GameManager {
         return games.get(lobby);
     }
 
-    public void makeMove(User user, Lobby lobby, Weapon move) {
+    public synchronized void makeMove(User user, Lobby lobby, Weapon move) {
         Game game;
-        synchronized (this) {
-            game = games.get(lobby);
-        }
+        game = games.get(lobby);
         game.makeMove(user, move);
+    }
+
+    synchronized public GameInfo getGameState(Lobby lobby, User user) {
+        return games.get(lobby).getGameState(user);
     }
 
     synchronized public boolean gameIsOver(Lobby lobby) {
