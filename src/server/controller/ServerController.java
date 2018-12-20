@@ -2,7 +2,6 @@ package server.controller;
 
 import server.exceptions.*;
 import server.integration.DB;
-import server.model.Lobby;
 import server.model.LobbyManager;
 import server.model.User;
 import server.model.UserManager;
@@ -92,13 +91,7 @@ public class ServerController extends UnicastRemoteObject implements Server {
 
     @Override
     public ServerInfo listLobbies(Token token) throws RemoteException {
-        User user = userManager.getUserByToken(token);
-        Lobby lobby = lobbyManager.getLobby(user);
-        ArrayList<String> lobbyNames = new ArrayList<>();
-        for (User lobbyUser : lobby.getUserList()) {
-            lobbyNames.add(lobbyUser.getUsername());
-        }
-        return new ServerInfo(lobbyNames);
+        return new ServerInfo(lobbyManager.getLobbyNames());
     }
 
     @Override
