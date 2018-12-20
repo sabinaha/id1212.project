@@ -191,7 +191,8 @@ public class ClientController extends UnicastRemoteObject implements Client {
     }
 
     /**
-     * The method which the server will send feedback to the client.
+     * The method which the server will send feedback to the client. The client can then print different feedback
+     * messages to the user depending on the response from the server.
      * @param response The response from the server.
      */
     @Override
