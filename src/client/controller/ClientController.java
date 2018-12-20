@@ -213,6 +213,11 @@ public class ClientController extends UnicastRemoteObject implements Client {
         return lobby;
     }
 
+    /**
+     * Displaying info from the server which can be different objects depending on what kind of message to
+     * display to the client.
+     * @param object the object which is sent to the client.
+     */
     @Override
     public void displayInfo(Object object) {
         System.out.println(object);
