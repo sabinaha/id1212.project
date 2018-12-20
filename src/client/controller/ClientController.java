@@ -70,6 +70,7 @@ public class ClientController extends UnicastRemoteObject implements Client {
                     server.createLobby(lobbyName, token);
                     break;
                 case "join":
+                    listAllLobbies();
                     System.out.println("Please state which lobby you want to join down below");
                     String lobby = lobbyInput();
                     server.joinLobby(lobby, token);
