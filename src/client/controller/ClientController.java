@@ -1,6 +1,8 @@
 package client.controller;
 
 import server.controller.ServerController;
+import server.exceptions.UserNotInGameException;
+import server.exceptions.UserNotInLobbyException;
 import server.exceptions.UserNotLoggedInException;
 import shared.*;
 
@@ -122,9 +124,9 @@ public class ClientController extends UnicastRemoteObject implements Client {
         } catch (RemoteException e) {
             if (e.getCause().getCause() instanceof UserNotLoggedInException){
                 System.out.println("--- You have to be logged in, in order to do this. ---");
-            } else if (e.getCause().getCause() instanceof NotInLobbyException) {
+            } else if (e.getCause().getCause() instanceof UserNotInLobbyException) {
                 System.out.println("--- You have to be in a lobby to do that! ---");
-            } else if (e.getCause().getCause() instanceof NotInGameException) {
+            } else if (e.getCause().getCause() instanceof UserNotInGameException) {
                 System.out.println("--- You have to be in a game to do that ---");
             }
             else {
