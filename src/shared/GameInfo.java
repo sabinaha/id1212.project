@@ -10,13 +10,15 @@ public class GameInfo implements Serializable {
     private int round;
     private int ofRounds;
     private State state;
+    private boolean gameIsDone;
 
-    public GameInfo (int roundScore, int totalScore, int round, int ofRounds, State state) {
+    public GameInfo (int roundScore, int totalScore, int round, int ofRounds, State state, boolean gameIsDone) {
         this.roundScore = roundScore;
         this.totalScore = totalScore;
         this.round = round;
         this.ofRounds = ofRounds;
         this.state = state;
+        this.gameIsDone = gameIsDone;
     }
 
     public int getRoundScore() {

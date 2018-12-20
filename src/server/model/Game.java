@@ -111,15 +111,13 @@ public class Game {
             givePoints(user, points);
         }
         buildGameInfos();
-        for (GameInfo value : gameStates.values()) {
-            System.out.println(value);
-        }
+        System.out.printf("gameStates.size=%d\n", gameStates.size());
         moveList.clear();
     }
 
     private void buildGameInfos() {
-        for (Map.Entry<User, GameInfo> entry : gameStates.entrySet()) {
-            User user = entry.getKey();
+        System.out.println("Entering buildGameInfo");
+        for (User user : userRoundPoints.keySet()) {
             int roundScore, totalScore, round = roundsPlayed, ofRounds = ROUNDS;
             roundScore = userRoundPoints.get(user);
             totalScore = userTotalPoints.get(user);
@@ -151,7 +149,8 @@ public class Game {
                         state = GameInfo.State.DRAW;
                     break;
             }
-            gameStates.put(user, new GameInfo(roundScore, totalScore, round, ofRounds, state));
+            System.out.println("PUTTING");
+            gameStates.put(user, new GameInfo(roundScore, totalScore, round, ofRounds, state, (roundsPlayed + 1) == ROUNDS));
         }
     }
 

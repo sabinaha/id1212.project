@@ -23,9 +23,7 @@ public class GameManager {
     }
 
     public synchronized void makeMove(User user, Lobby lobby, Weapon move) {
-        Game game;
-        game = games.get(lobby);
-        game.makeMove(user, move);
+        games.get(lobby).makeMove(user, move);
     }
 
     synchronized public GameInfo getGameState(Lobby lobby, User user) {
@@ -42,5 +40,9 @@ public class GameManager {
 
     synchronized public HashMap<User, Integer> determineWinners(Lobby lobby) {
         return games.get(lobby).determineWinners();
+    }
+
+    synchronized public boolean isStartOfRound(Lobby lobby) {
+        return games.get(lobby).userWhoMadeTheirMoves().size() == 0;
     }
 }

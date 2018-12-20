@@ -117,30 +117,22 @@ public class ServerController extends UnicastRemoteObject implements Server {
         Lobby lobby = lobbyManager.getLobby(user);
         gameManager.startGame(lobby);
         userManager.getClientRef(token).receiveResponse(Response.GAME_STARTED);
-        postRoundTasks(lobby);
+
+        // First time, all users are prompted
+        promptUsersForAction(lobby);
     }
 
-    private void postRoundTasks(Lobby lobby) throws RemoteException {
-        ArrayList<User> userlist = new ArrayList<>(lobby.getUserList());
-        if (gameManager.userWhoMadeTheirMoves(lobby).size() == 0) { // If we're inside of here, it's the end of a round
-
-            for (User user : lobby.getUserList()) {
-                GameInfo gameInfo = gameManager.getGameState(lobby, user);
-//                System.out.println(lobby);
-//                System.out.println(user);
-//                System.out.println(gameInfo);
-                userManager.getClientRef(user.getToken()).displayInfo(gameInfo);
-            }
-
-            for (User moveUser : userlist)
-                userManager.getClientRef(moveUser.getToken()).receiveResponse(Response.GAME_PROMPT_ACTION);
-        }
-    }
-
-    private void postGameInfo(Lobby lobby) throws RemoteException {
+    private void sendPostRoundInfo(Lobby lobby) throws RemoteException {
         for (User user : lobby.getUserList()) {
-            userManager.getClientRef(user.getToken()).receiveResponse(Response.GAME_DONE);
+            GameInfo gameInfo = gameManager.getGameState(lobby, user);
+            userManager.getClientRef(user.getToken()).displayInfo(gameInfo);
         }
+    }
+
+    private void promptUsersForAction(Lobby lobby) throws RemoteException {
+        ArrayList<User> userList = new ArrayList<>(lobby.getUserList());
+            for (User moveUser : userList)
+                userManager.getClientRef(moveUser.getToken()).receiveResponse(Response.GAME_PROMPT_ACTION);
     }
 
     @Override
@@ -150,9 +142,10 @@ public class ServerController extends UnicastRemoteObject implements Server {
         Lobby lobby = lobbyManager.getLobby(user);
         gameManager.makeMove(user, lobby, weapon);
         if (gameManager.gameIsOver(lobby)) {
-            postGameInfo(lobby);
-        } else {
-            postRoundTasks(lobby);
+            sendPostRoundInfo(lobby);
+        } else if (gameManager.isStartOfRound(lobby)) {
+            sendPostRoundInfo(lobby);
+            promptUsersForAction(lobby);
         }
     }
 
