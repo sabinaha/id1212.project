@@ -16,7 +16,7 @@ public enum Response implements Serializable {
     REG_DUPL_USERNAME,
     REG_FAILED,
 
-    //
+    //LOBBY
     LOBBY_CREATE_SUCCESS,
     LOBBY_JOIN_SUCCESS,
     LOBBY_JOIN_FAILED,
@@ -25,6 +25,13 @@ public enum Response implements Serializable {
     LOBBY_GAME_ONGOING_ERROR,
     LOBBY_USER_NOT_IN_LOBBY,
     LOBBY_LEAVE_SUCCESSFUL,
+
+    //GAME
+    GAME_STARTED,
+    GAME_ENDED,
+    GAME_WON,
+    GAME_LOST,
+    GAME_DRAW,
 
     // MISC
     UNKNOWN_ERROR
