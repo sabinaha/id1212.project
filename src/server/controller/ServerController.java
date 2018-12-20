@@ -1,6 +1,5 @@
 package server.controller;
 
-import com.sun.istack.internal.Nullable;
 import server.exceptions.*;
 import server.integration.DB;
 import server.model.LobbyManager;
@@ -90,7 +89,6 @@ public class ServerController extends UnicastRemoteObject implements Server {
     }
 
     @Override
-    @Nullable
     public LobbyInfo listPlayers(Token token) throws RemoteException {
         User user = userManager.getUserByToken(token);
         if (user.getLobby() == null) {

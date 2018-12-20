@@ -18,6 +18,7 @@ public class ClientController extends UnicastRemoteObject implements Client {
     public Scanner sc = new Scanner(System.in);
     private String PROMPT = ">> ";
     private Token token;
+    private boolean inGame;
 
     public ClientController() throws RemoteException {
     }
@@ -105,7 +106,7 @@ public class ClientController extends UnicastRemoteObject implements Client {
      * @throws RemoteException
      */
     private void gameState() throws RemoteException {
-        boolean inGame = true;
+        inGame = true;
         while (inGame) {
             showPrompt();
             String cmd = sc.nextLine();
@@ -134,6 +135,7 @@ public class ClientController extends UnicastRemoteObject implements Client {
                 break;
             case "leave":
                 server.leaveLobby(token);
+                inGame = false;
                 break;
             case "quit":
                 server.quit(this.token);
