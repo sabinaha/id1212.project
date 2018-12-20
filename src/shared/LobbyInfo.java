@@ -21,4 +21,11 @@ public class LobbyInfo implements Serializable {
     public ArrayList<String> getUsersInLobby() {
         return usersInLobby;
     }
+
+    @Override
+    public String toString() {
+        return "LobbyInfo{" +
+                "usersInLobby=" + usersInLobby +
+                '}';
+    }
 }

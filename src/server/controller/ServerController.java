@@ -126,6 +126,9 @@ public class ServerController extends UnicastRemoteObject implements Server {
 
             for (User user : lobby.getUserList()) {
                 GameInfo gameInfo = gameManager.getGameState(lobby, user);
+//                System.out.println(lobby);
+//                System.out.println(user);
+//                System.out.println(gameInfo);
                 userManager.getClientRef(user.getToken()).displayInfo(gameInfo);
             }
 

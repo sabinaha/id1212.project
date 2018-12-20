@@ -111,6 +111,9 @@ public class Game {
             givePoints(user, points);
         }
         buildGameInfos();
+        for (GameInfo value : gameStates.values()) {
+            System.out.println(value);
+        }
         moveList.clear();
     }
 
@@ -169,5 +172,18 @@ public class Game {
 
     public GameInfo getGameState(User user) {
         return gameStates.get(user);
+    }
+
+    @Override
+    public String toString() {
+        return "Game{" +
+                "lobby=" + lobby +
+                ", userRoundPoints=" + userRoundPoints +
+                ", userTotalPoints=" + userTotalPoints +
+                ", moveList=" + moveList +
+                ", gameStates=" + gameStates +
+                ", roundsToPlay=" + roundsToPlay +
+                ", roundsPlayed=" + roundsPlayed +
+                '}';
     }
 }

@@ -46,4 +46,9 @@ public class GameInfo implements Serializable {
     public State getState() {
         return state;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Round: %d of %d | Score: %d, Total: %d | State:", round,  ofRounds, roundScore, totalScore, state);
+    }
 }
