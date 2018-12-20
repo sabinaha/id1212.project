@@ -21,6 +21,7 @@ public enum Response implements Serializable {
     LOBBY_DONT_EXISTS,
     LOBBY_GAME_ONGOING_ERROR,
     LOBBY_USER_NOT_IN_LOBBY,
+    LOBBY_LEAVE_SUCCESSFUL,
 
     // MISC
     UNKNOWN_ERROR

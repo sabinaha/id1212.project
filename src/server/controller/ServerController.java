@@ -24,23 +24,24 @@ public class ServerController extends UnicastRemoteObject implements Server {
     /**
      * Asserts that the user is logged in.
      * @param token The token to identify the user by.
-     * @throws UserNotLoggedInException If the user is not loeed
+     * @throws UserNotLoggedInException If the user is not logged in
      */
-    private void assertLoggedIn(Token token) throws UserNotLoggedInException {
-        if (token == null)
-            throw new UserNotLoggedInException("Token was null");
-        if (!userManager.hasUser(token))
-            throw new UserNotLoggedInException("No such user is registred in userManager");
+    private void assertLoggedIn(Token token) throws RemoteException {
+        if (token == null || !userManager.hasUser(token))
+            throw new RemoteException("You must be logged in to do this.", new UserNotLoggedInException("Token was null"));
+    }
+
+    private void assertInLobby(Token token) throws RemoteException {
+        if (userManager.getUserByToken(token).getLobby() == null)
+            throw new RemoteException("You must be in a lobby to do this.", new UserNotInLobbyException());
+    }
+
+    private void assertInGame(Token token) throws RemoteException {
     }
 
     @Override
     public void createLobby(String lobbyName, Token token) throws RemoteException {
-        try {
-            assertLoggedIn(token);
-        } catch (UserNotLoggedInException e) {
-            System.out.println("throwing");
-            throw new RemoteException("You must be logged in", e);
-        }
+        assertLoggedIn(token);
         User user = userManager.getUserByToken(token);
         try {
             lobbyManager.createNewLobby(lobbyName, user);
@@ -54,6 +55,7 @@ public class ServerController extends UnicastRemoteObject implements Server {
 
     @Override
     public void joinLobby(String lobbyName, Token token) throws RemoteException {
+        assertLoggedIn(token);
         User user = userManager.getUserByToken(token);
         try {
             lobbyManager.joinLobby(lobbyName, user);
@@ -71,11 +73,15 @@ public class ServerController extends UnicastRemoteObject implements Server {
 
     @Override
     public void leaveLobby(Token token) throws RemoteException {
+        assertLoggedIn(token);
+        assertInLobby(token);
         User user = userManager.getUserByToken(token);
         if (user.getLobby() == null)
             userManager.getClientRef(token).receiveResponse(Response.LOBBY_USER_NOT_IN_LOBBY);
-        else
+        else {
             lobbyManager.leaveLobby(user);
+            userManager.getClientRef(token).receiveResponse(Response.LOBBY_LEAVE_SUCCESSFUL);
+        }
     }
 
     @Override
@@ -90,6 +96,7 @@ public class ServerController extends UnicastRemoteObject implements Server {
 
     @Override
     public LobbyInfo listPlayers(Token token) throws RemoteException {
+        assertInLobby(token);
         User user = userManager.getUserByToken(token);
         if (user.getLobby() == null) {
             userManager.getClientRef(token).receiveResponse(Response.LOBBY_USER_NOT_IN_LOBBY);
@@ -104,7 +111,6 @@ public class ServerController extends UnicastRemoteObject implements Server {
 
     @Override
     public Token login(UserCredential uc, Client client) throws RemoteException {
-        System.out.println("[SERVER] login");
         Token token = null;
         try {
             DB.getDB().login(uc);
@@ -121,15 +127,14 @@ public class ServerController extends UnicastRemoteObject implements Server {
     @Override
     public void quit(Token token) {
         User user = userManager.getUserByToken(token);
-        if (user.getLobby() != null) {
+        if (user.getLobby() != null)
             lobbyManager.leaveLobby(user);
-        }
-        userManager.logoutUser(user);
+        if (userManager.hasUser(token))
+            userManager.logoutUser(user);
     }
 
     @Override
     public void register(UserCredential uc, Client client) throws RemoteException {
-        System.out.println("[SERVER] register");
         try {
             DB.getDB().registerUser(uc);
         } catch (UserAlreadyExistsException e) {
