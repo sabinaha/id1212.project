@@ -37,4 +37,8 @@ public class UserManager {
     synchronized public Client getClientRef(Token token) {
         return players.get(token.getId()).getClientRef();
     }
+
+    synchronized public void logoutUser(User user) {
+        players.remove(user);
+    }
 }

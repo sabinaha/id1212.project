@@ -3,6 +3,7 @@ package server.model;
 import server.exceptions.GameOngoingException;
 import server.exceptions.LobbyAlreadyExistsException;
 import server.exceptions.LobbyDontExistException;
+import server.exceptions.UserNotInLobbyException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,7 +32,9 @@ public class LobbyManager {
         return list;
     }
 
-    synchronized void leaveLobby(User user) {
+    public synchronized void leaveLobby(User user) {
+        if (!lobbies.containsKey(user.getLobby()))
+            return;
         lobbies.get(user.getLobby()).removeUser(user);
         user.setLobby(null);
     }

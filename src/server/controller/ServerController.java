@@ -1,5 +1,6 @@
 package server.controller;
 
+import com.sun.istack.internal.Nullable;
 import server.exceptions.*;
 import server.integration.DB;
 import server.model.LobbyManager;
@@ -71,7 +72,11 @@ public class ServerController extends UnicastRemoteObject implements Server {
 
     @Override
     public void leaveLobby(Token token) throws RemoteException {
-
+        User user = userManager.getUserByToken(token);
+        if (user.getLobby() == null)
+            userManager.getClientRef(token).receiveResponse(Response.LOBBY_USER_NOT_IN_LOBBY);
+        else
+            lobbyManager.leaveLobby(user);
     }
 
     @Override
@@ -85,9 +90,13 @@ public class ServerController extends UnicastRemoteObject implements Server {
     }
 
     @Override
+    @Nullable
     public LobbyInfo listPlayers(Token token) throws RemoteException {
-        // AUTH=???
         User user = userManager.getUserByToken(token);
+        if (user.getLobby() == null) {
+            userManager.getClientRef(token).receiveResponse(Response.LOBBY_USER_NOT_IN_LOBBY);
+            return null;
+        }
         ArrayList<String> usernames = new ArrayList<>();
         for (User lobbyUser : lobbyManager.getLobby(user).getUserList()) {
             usernames.add(lobbyUser.getUsername());
@@ -113,7 +122,11 @@ public class ServerController extends UnicastRemoteObject implements Server {
 
     @Override
     public void quit(Token token) {
-
+        User user = userManager.getUserByToken(token);
+        if (user.getLobby() != null) {
+            lobbyManager.leaveLobby(user);
+        }
+        userManager.logoutUser(user);
     }
 
     @Override
