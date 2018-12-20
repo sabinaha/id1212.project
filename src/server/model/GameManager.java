@@ -1,6 +1,5 @@
 package server.model;
 
-import com.sun.istack.internal.NotNull;
 import shared.Weapon;
 
 import java.util.ArrayList;

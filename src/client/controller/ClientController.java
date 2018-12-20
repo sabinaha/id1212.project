@@ -32,13 +32,13 @@ public class ClientController extends UnicastRemoteObject implements Client {
         try {
             Registry registry = LocateRegistry.getRegistry(null);
             server = (Server) registry.lookup(ServerController.SERVER_REGISTRY_NAMESPACE);
-            System.out.println("Rock-paper-scissors");
+            System.out.println("Rock-Paper-Scissors");
 
             // Program loop
             while(connected){
                 showPrompt();
                 String cmd = sc.nextLine();
-                parseInput(cmd);
+                parseCmd(cmd);
             }
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
@@ -56,36 +56,31 @@ public class ClientController extends UnicastRemoteObject implements Client {
      * Client will send different prompts to the server depending on the input
      * @param cmd the command that the user wants to execute
      */
-    public void parseInput (String cmd) {
+    public void parseCmd(String cmd) {
         UserCredential uc = null;
         try {
             switch (cmd) {
                 case "login":
-                    uc = userInfo();
+                    uc = userInput();
                     token = server.login(uc, this);
                     break;
                 case "create":
                     System.out.println("Please fill out the name of the lobby down below.");
-                    String lobbyName = lobbyInfo();
+                    String lobbyName = lobbyInput();
                     server.createLobby(lobbyName, token);
                     break;
                 case "join":
                     System.out.println("Please state which lobby you want to join down below");
-                    String lobby = lobbyInfo();
+                    String lobby = lobbyInput();
                     server.joinLobby(lobby, token);
+                    listPlayersInLobby();
                     break;
                 case "register":
-                    uc = userInfo();
+                    uc = userInput();
                     server.register(uc, this);
                     break;
                 case "lobbies":
-                    ServerInfo lobbies = server.listLobbies(token);
-                    if (lobbies == null)
-                        return;
-                    System.out.println("CURRENT LOBBIES");
-                    for (String l : lobbies.getLobbyNames()) {
-                        System.out.println("• " + l);
-                    }
+                    listAllLobbies();
                     break;
                 case "help":
                     displayHelp();
@@ -115,14 +110,7 @@ public class ClientController extends UnicastRemoteObject implements Client {
                     displayRules();
                     break;
                 case "players":
-                    LobbyInfo players = server.listPlayers(token);
-                    if (players == null){
-                        return;
-                    }
-                    System.out.println("PLAYERS IN LOBBY");
-                    for (String s : players.getUsersInLobby()) {
-                        System.out.println("• " + s);
-                    }
+
                     break;
                 default:
                     System.out.println("That is not a recognized command!");
@@ -130,11 +118,11 @@ public class ClientController extends UnicastRemoteObject implements Client {
             }
         } catch (RemoteException e) {
             if (e.getCause().getCause() instanceof UserNotLoggedInException){
-                System.out.println("--- You have to be logged in, in order to do this. ---");
+                System.out.println(">> You have to be logged in, in order to do this. <<");
             } else if (e.getCause().getCause() instanceof UserNotInLobbyException) {
-                System.out.println("--- You have to be in a lobby to do that! ---");
+                System.out.println(">> You have to be in a lobby to do that! <<");
             } else if (e.getCause().getCause() instanceof UserNotInGameException) {
-                System.out.println("--- You have to be in a game to do that ---");
+                System.out.println(">> You have to be in a game to do that <<");
             }
             else {
                 e.printStackTrace();
@@ -143,7 +131,34 @@ public class ClientController extends UnicastRemoteObject implements Client {
     }
 
     /**
-     * Display the commands that the user can write in the command line.
+     * This method lists all the current lobbies.
+     */
+    private void listAllLobbies() throws RemoteException {
+        ServerInfo lobbies = server.listLobbies(token);
+        if (lobbies == null)
+            return;
+        System.out.println("CURRENT LOBBIES");
+        for (String l : lobbies.getLobbyNames()) {
+            System.out.println("• " + l);
+        }
+    }
+
+    /**
+     * This method lists all of the players in a lobby.
+     */
+    private void listPlayersInLobby() throws RemoteException {
+        LobbyInfo players = server.listPlayers(token);
+        if (players == null){
+            return;
+        }
+        System.out.println("PLAYERS IN LOBBY");
+        for (String s : players.getUsersInLobby()) {
+            System.out.println("• " + s);
+        }
+    }
+
+    /**
+     * This method will display the commands that the user can write in the command line.
      */
     private void displayHelp(){
         System.out.println("==== HELP ====\nHere are the commands you may write:\n'login' to login\n" +
@@ -168,7 +183,7 @@ public class ClientController extends UnicastRemoteObject implements Client {
      * When the user wants to add their user credentials this method is called.
      * @return Returns the user credential as an object.
      */
-    private UserCredential userInfo() {
+    private UserCredential userInput() {
         System.out.print("Username: ");
         String usr = sc.nextLine();
         System.out.print("Password: ");
@@ -181,7 +196,7 @@ public class ClientController extends UnicastRemoteObject implements Client {
      * When the user wants to add lobby information, this method is called.
      * @return returns the string of which holds the lobby name.
      */
-    private String lobbyInfo() {
+    private String lobbyInput() {
         System.out.print("Lobby name: ");
         String lobby = sc.nextLine();
         return lobby;
@@ -236,6 +251,15 @@ public class ClientController extends UnicastRemoteObject implements Client {
                 break;
             case REG_SUCCESSFUL:
                 s = "Registration was successful!";
+                break;
+            case GAME_PROMPT_ACTION:
+                s = "Please select 'rock', 'paper' or 'scissors'";
+                break;
+            case GAME_DONE:
+                s = "Game is done!";
+                break;
+            case GAME_STARTED:
+                s = "Game has started!";
                 break;
             default:
                 s = response.toString();
