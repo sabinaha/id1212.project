@@ -11,8 +11,6 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 
-import static shared.Response.*;
-
 public class ClientController extends UnicastRemoteObject implements Client {
 
     private Server server;
@@ -44,6 +42,9 @@ public class ClientController extends UnicastRemoteObject implements Client {
         }
     }
 
+    /**
+     * This method will print the prompt.
+     */
     private void showPrompt() {
         System.out.print(PROMPT);
     }
@@ -64,13 +65,11 @@ public class ClientController extends UnicastRemoteObject implements Client {
                     System.out.println("Please fill out the name of the lobby down below.");
                     String lobbyName = lobbyInfo();
                     server.createLobby(lobbyName, token);
-                    gameState();
                     break;
                 case "join":
                     System.out.println("Please state which lobby you want to join down below");
                     String lobby = lobbyInfo();
                     server.joinLobby(lobby, token);
-                    gameState();
                     break;
                 case "register":
                     uc = userInfo();
@@ -100,6 +99,11 @@ public class ClientController extends UnicastRemoteObject implements Client {
         }
     }
 
+    /**
+     * If the user is in a lobby, they will not be able to write specific commands like "login". This method checks
+     * to see if the user is in a lobby.
+     * @throws RemoteException
+     */
     private void gameState() throws RemoteException {
         boolean inGame = true;
         while (inGame) {
@@ -109,6 +113,11 @@ public class ClientController extends UnicastRemoteObject implements Client {
         }
     }
 
+    /**
+     * The commands which the user can write when in a lobby/game will be parsed here and sent to the corresponding
+     * method in the server.
+     * @param cmd The command which the user has written.
+     */
     private void parseGameCmd(String cmd) throws RemoteException {
         switch (cmd) {
             case "start":
@@ -136,6 +145,9 @@ public class ClientController extends UnicastRemoteObject implements Client {
                 break;
             case "players":
                 LobbyInfo players = server.listPlayers(token);
+                if (players == null){
+                    return;
+                }
                 for (String s : players.getUsersInLobby()) {
                     System.out.println(s);
                 }
@@ -148,7 +160,6 @@ public class ClientController extends UnicastRemoteObject implements Client {
 
     /**
      * Display the commands that the user can write in the command line.
-     * @return returns the help string to the user.
      */
     private void displayHelp(){
         System.out.println("==== HELP ====\nHere are the commands you may write:\n 'login' to login\n" +
@@ -157,6 +168,9 @@ public class ClientController extends UnicastRemoteObject implements Client {
                 "'quit' to quit the game");
     }
 
+    /**
+     * The method will be called when the user wants help when in a lobby/game.
+     */
     private void displayGameHelp(){
         System.out.println("==== GAME HELP ====\nHere are the commands you may write:\n 'start' to start game\n" +
                 "'rock' to choose rock as your weapon\n'paper' to choose paper as your weapon\n" +
@@ -164,6 +178,9 @@ public class ClientController extends UnicastRemoteObject implements Client {
                 "'quit' to quit the game\n'rules' to show the rules for the game");
     }
 
+    /**
+     * The method will be called when the user wants to see the game rules.
+     */
     private void displayRules() {
         System.out.println("When the game starts, please select rock, paper or scissors by writing 'rock', 'paper', 'scissors\n" +
                 "You will receive one point for every player you beat. If everyone picks the same 'weapon', the score" +
@@ -198,29 +215,43 @@ public class ClientController extends UnicastRemoteObject implements Client {
 
     }
 
+    /**
+     * The method which the server will send feedback to the client.
+     * @param response The response from the server.
+     */
     @Override
     public void receiveResponse(Response response) {
         String s = "";
-        switch (response) {
-            case LOGIN_SUCCESSFUL:
-                s = "Login successful!";
-                break;
-            case LOBBY_CREATE_SUCCESS:
-                s = "Lobby was successfully created!";
-                break;
-            case LOBBY_ALREADY_EXISTS:
-                s = "Lobby already exists, try joining it or create a new one.";
-                break;
-            case LOBBY_JOIN_SUCCESS:
-                s = "Joining the lobby was successful!";
-                break;
-            case LOBBY_JOIN_FAILED:
-                s = "Could not connect to the lobby";
-                break;
-            case LOBBY_DONT_EXISTS:
-                s = "That lobby does not exists";
-                break;
+        try {
+            switch (response) {
+                case LOGIN_SUCCESSFUL:
+                    s = "Login successful!";
+                    break;
+                case LOBBY_CREATE_SUCCESS:
+                    s = "Lobby was successfully created!";
+                    gameState();
+                    break;
+                case LOBBY_ALREADY_EXISTS:
+                    s = "Lobby already exists, try joining it or create a new one.";
+                    break;
+                case LOBBY_JOIN_SUCCESS:
+                    s = "Joining the lobby was successful!";
+                    gameState();
+                    break;
+                case LOBBY_JOIN_FAILED:
+                    s = "Could not connect to the lobby";
+                    break;
+                case LOBBY_DONT_EXISTS:
+                    s = "That lobby does not exists";
+                    break;
+                case LOBBY_USER_NOT_IN_LOBBY:
+                    s = "There are no players in the lobby.";
+                default:
+                    s = response.toString();
+            }
+            System.out.println(">> " + s + " <<");
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
-        System.out.println(">> " + s + " <<");
     }
 }
