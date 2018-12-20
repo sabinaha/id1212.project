@@ -225,6 +225,15 @@ public class ClientController extends UnicastRemoteObject implements Client {
             case LOBBY_GAME_ONGOING_ERROR:
                 s = "A game is already ongoing, you can't join at the moment. Try again later!";
                 break;
+            case LOGIN_INCORRECT_CRED:
+                s = "The username or password was wrong. Try again!";
+                break;
+            case REG_DUPL_USERNAME:
+                s = "That username already exists!";
+                break;
+            case REG_SUCCESSFUL:
+                s = "Registration was successful!";
+                break;
             default:
                 s = response.toString();
         }
