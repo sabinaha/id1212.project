@@ -43,7 +43,7 @@ public class GameInfo implements Serializable {
         return state;
     }
 
-    public boolean isGameIsDone() {
+    public boolean gameIsDone() {
         return gameIsDone;
     }
 

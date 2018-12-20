@@ -220,21 +220,35 @@ public class ClientController extends UnicastRemoteObject implements Client {
      */
     @Override
     public void displayInfo(Object object) {
-        System.out.println(object);
         if (object instanceof GameInfo) {
             String s = "";
             GameInfo gameInfo = (GameInfo) object;
-            switch (gameInfo.getState()) {
-                case WON:
-                    s = "You won!";
-                    break;
-                case LOST:
-                    s = "You lost!";
-                    break;
-                case DRAW:
-                    s = "It's a draw";
-                    break;
+            if (!gameInfo.gameIsDone()) {
+                switch (gameInfo.getState()) {
+                    case WON:
+                        s = "You won the round!";
+                        break;
+                    case LOST:
+                        s = "You lost the round!";
+                        break;
+                    case DRAW:
+                        s = "The round was a draw!";
+                        break;
+                }
+            } else {
+                switch (gameInfo.getFinalResult()) {
+                    case WON:
+                        s = "You won the game!";
+                        break;
+                    case LOST:
+                        s = "You lost the game!";
+                        break;
+                    case DRAW:
+                        s = "The game was a draw!";
+                        break;
+                }
             }
+
             String info = printGameInfo(gameInfo);
             System.out.println(info + s);
         }
@@ -243,10 +257,17 @@ public class ClientController extends UnicastRemoteObject implements Client {
     private String printGameInfo(GameInfo gameInfo) {
         int roundScore = gameInfo.getRoundScore();
         int totalScore = gameInfo.getTotalScore();
-        int currentRound = gameInfo.getRound();
+        int currentRound = gameInfo.getRound() + 1;
         int totalRounds = gameInfo.getOfRounds();
 
-        String s = currentRound + " out of " + totalRounds + "\nRound score: " + roundScore + "\nTotal score: " + totalScore + "\n";
+        String s;
+        if (gameInfo.gameIsDone()) {
+            s = currentRound + " out of " + totalRounds + "\nTotal score: " + totalScore + "\n";
+        } else {
+             s = currentRound + " out of " + totalRounds + "\nRound score: " +
+                     roundScore + "\nTotal score: " + totalScore + "\n";
+        }
+
         return s;
     }
 
