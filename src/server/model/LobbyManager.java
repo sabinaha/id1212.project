@@ -6,6 +6,7 @@ import server.exceptions.LobbyDontExistException;
 import server.exceptions.UserNotInLobbyException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,5 +49,9 @@ public class LobbyManager {
 
     synchronized public Lobby getLobby(User user) {
         return lobbies.get(user.getLobby());
+    }
+
+    synchronized public ArrayList<String> getLobbyName() {
+        return (ArrayList<String>) lobbies.keySet();
     }
 }
