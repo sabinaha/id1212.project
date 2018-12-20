@@ -2,20 +2,21 @@ package server.controller;
 
 import server.exceptions.*;
 import server.integration.DB;
-import server.model.LobbyManager;
-import server.model.User;
-import server.model.UserManager;
+import server.model.*;
 import shared.*;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ServerController extends UnicastRemoteObject implements Server {
 
     public static String SERVER_REGISTRY_NAMESPACE = "se.kth.sabinaha.id1212projekt.server";
     private UserManager userManager = new UserManager();
     private LobbyManager lobbyManager = new LobbyManager();
+    private GameManager gameManager = new GameManager();
 
     public ServerController() throws RemoteException {
         System.out.println("Starting server");
@@ -32,16 +33,26 @@ public class ServerController extends UnicastRemoteObject implements Server {
     }
 
     /**
-     * Asserts that the user is in a lobby.
+     * Asserts that the user is in a lobby and logged in.
      * @param token The token to identify the user by.
      * @throws RemoteException Throws this if the user is not in a lobby.
      */
     private void assertInLobby(Token token) throws RemoteException {
+        assertLoggedIn(token);
         if (userManager.getUserByToken(token).getLobby() == null)
             throw new RemoteException("You must be in a lobby to do this.", new UserNotInLobbyException());
     }
 
+    /**
+     * Asserts that the user is in a game, in a lobby and logged in.
+     * @param token
+     * @throws RemoteException
+     */
     private void assertInGame(Token token) throws RemoteException {
+        assertInLobby(token);
+        User user = userManager.getUserByToken(token);
+        if (!lobbyManager.getLobby(user).getUserList().contains(user))
+            throw new RemoteException("This user is not in game", new UserNotInGameException());
     }
 
     /**
@@ -80,10 +91,6 @@ public class ServerController extends UnicastRemoteObject implements Server {
             e.printStackTrace();
             userManager.getClientRef(token).receiveResponse(Response.LOBBY_DONT_EXISTS);
             return;
-        } catch (GameOngoingException e) {
-            e.printStackTrace();
-            userManager.getClientRef(token).receiveResponse(Response.LOBBY_GAME_ONGOING_ERROR);
-            return;
         }
         userManager.getClientRef(token).receiveResponse(Response.LOBBY_JOIN_SUCCESS);
     }
@@ -95,7 +102,6 @@ public class ServerController extends UnicastRemoteObject implements Server {
      */
     @Override
     public void leaveLobby(Token token) throws RemoteException {
-        assertLoggedIn(token);
         assertInLobby(token);
         User user = userManager.getUserByToken(token);
         if (user.getLobby() == null)
@@ -108,7 +114,39 @@ public class ServerController extends UnicastRemoteObject implements Server {
 
     @Override
     public void startGame(Token token) throws RemoteException {
+        assertInLobby(token);
+        User user = userManager.getUserByToken(token);
+        Lobby lobby = lobbyManager.getLobby(user);
+        gameManager.startGame(lobby);
+        userManager.getClientRef(token).receiveResponse(Response.GAME_STARTED);
+        promptUsersForAction(lobby);
+    }
 
+    private void promptUsersForAction(Lobby lobby) throws RemoteException {
+        ArrayList<User> userlist = new ArrayList<>(lobby.getUserList());
+        if (gameManager.userWhoMadeTheirMoves(lobby).size() == 0) {
+            for (User moveUser : userlist)
+                userManager.getClientRef(moveUser.getToken()).receiveResponse(Response.GAME_PROMPT_ACTION);
+        }
+    }
+
+    private void postGameInfo(Lobby lobby) throws RemoteException {
+        for (User user : lobby.getUserList()) {
+            userManager.getClientRef(user.getToken()).receiveResponse(Response.GAME_DONE);
+        }
+    }
+
+    @Override
+    public void choose(Weapon weapon, Token token) throws RemoteException {
+        assertInGame(token);
+        User user = userManager.getUserByToken(token);
+        Lobby lobby = lobbyManager.getLobby(user);
+        gameManager.makeMove(user, lobby, weapon);
+        if (gameManager.gameIsOver(lobby)) {
+            postGameInfo(lobby);
+        } else {
+            promptUsersForAction(lobby);
+        }
     }
 
     /**
@@ -193,10 +231,5 @@ public class ServerController extends UnicastRemoteObject implements Server {
             client.receiveResponse(Response.REG_DUPL_USERNAME);
         }
         client.receiveResponse(Response.REG_SUCCESSFUL);
-    }
-
-    @Override
-    public void choose(Weapon weapon, Token token) throws RemoteException {
-
     }
 }

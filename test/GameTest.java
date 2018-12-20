@@ -21,7 +21,7 @@ public class GameTest {
         lobby.addUser(user2);
         lobby.addUser(user3);
         lobby.addUser(user4);
-        game = new Game(lobby, 5);
+        game = new Game(lobby);
     }
 
     @After
@@ -34,12 +34,6 @@ public class GameTest {
         game.makeMove(user2, Weapon.ROCK);
         game.makeMove(user3, Weapon.PAPER);
         game.makeMove(user4, Weapon.SCISSORS);
-        game.start();
-        game.start();
-        game.start();
-        game.start();
-        game.start();
-        game.start();
 
     }
 

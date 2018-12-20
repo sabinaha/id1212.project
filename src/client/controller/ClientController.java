@@ -26,7 +26,7 @@ public class ClientController extends UnicastRemoteObject implements Client {
     }
 
     /**
-     * Will start the connection to the server and hold the connection running.
+     * Will playRound the connection to the server and hold the connection running.
      */
     public void start(){
         try {
@@ -149,7 +149,7 @@ public class ClientController extends UnicastRemoteObject implements Client {
         System.out.println("==== HELP ====\nHere are the commands you may write:\n'login' to login\n" +
                 "'create' to create lobby\n'join' to join a lobby\n'register' to register a new user\n" +
                 "'players' to list all players in a lobby\n'lobbies' to list all lobbies\n" +
-                "'quit' to quit the game\n'start' to start game" +
+                "'quit' to quit the game\n'playRound' to playRound game" +
                 "\n'rock' to choose rock as your weapon\n'paper' to choose paper as your weapon" +
                 "\n'scissors' to choose scissors as your weapon" +
                 "\n'rules' to show the rules for the game");

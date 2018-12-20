@@ -28,11 +28,6 @@ public enum Response implements Serializable {
 
     //GAME
     GAME_STARTED,
-    GAME_ENDED,
-    GAME_WON,
-    GAME_LOST,
-    GAME_DRAW,
-
-    // MISC
-    UNKNOWN_ERROR
+    GAME_DONE,
+    GAME_PROMPT_ACTION
 }

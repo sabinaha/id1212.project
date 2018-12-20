@@ -35,4 +35,9 @@ public class User {
     public String getLobby() {
         return inLobbyName;
     }
+
+    @Override
+    public String toString() {
+        return String.format("User: %s", username);
+    }
 }

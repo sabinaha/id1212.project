@@ -37,7 +37,7 @@ public class LobbyManager {
         user.setLobby(null);
     }
 
-    synchronized public void joinLobby(String lobby, User user) throws LobbyDontExistException, GameOngoingException {
+    synchronized public void joinLobby(String lobby, User user) throws LobbyDontExistException {
         if (!lobbies.containsKey(lobby))
             throw new LobbyDontExistException();
         lobbies.get(lobby).addUser(user);

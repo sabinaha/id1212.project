@@ -2,56 +2,43 @@ package server.model;
 
 import shared.Weapon;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Game {
-    Lobby lobby;
-    Map<User, Integer> userRoundPoints = new ConcurrentHashMap();
-    Map<User, Integer> userTotalPoints = new ConcurrentHashMap<>();
-    Map<User, Weapon> moveList = new ConcurrentHashMap<>();
-    int roundsToPlay;
-    int roundsPlayed;
+    private Lobby lobby;
+    private Map<User, Integer> userRoundPoints = new ConcurrentHashMap();
+    private Map<User, Integer> userTotalPoints = new ConcurrentHashMap<>();
+    private Map<User, Weapon> moveList = new ConcurrentHashMap<>();
+    private int roundsToPlay;
+    private int roundsPlayed;
 
-    public Game(Lobby lobby, int rounds){
+    private final static int ROUNDS = 2;
+
+    public Game(Lobby lobby) {
         this.lobby = lobby;
         this.roundsPlayed = 0;
-        this.roundsToPlay = 5;
+        this.roundsToPlay = ROUNDS;
         for (User user : lobby.getUserList()) {
             userRoundPoints.put(user, 0);
             userTotalPoints.put(user, 0);
         }
     }
 
-    public void makeMove(User user, Weapon weapon){
-        if (moveList.size() < userRoundPoints.size()){
-            moveList.put(user, weapon);
-        }else{
-            System.out.println("Vad i helvete håller du på med? Vi är ju redan klara! Det här är ju livsfarligt! JAG STARTAR!");
-            start();
-        }
-    }
-
-    public void start() {
-        if (roundsPlayed < roundsToPlay){
-            rewardPlayers();
-            roundsPlayed++;
-        }else if (roundsPlayed == roundsToPlay){
-            HashMap<User, Integer> winners = determineWinners();
-            for (Map.Entry<User, Integer> entry : winners.entrySet()){
-                System.out.println("Winner: " + entry.getKey().getUsername() + " with score: " + entry.getValue());
+    public void makeMove(User user, Weapon weapon) {
+        moveList.put(user, weapon);
+        synchronized (this) {
+            if (moveList.size() == userTotalPoints.size()) {
+                rewardPlayers();
+                roundsPlayed++;
             }
-        }else{
-            System.out.println("rip");
         }
-
-
     }
 
-    private HashMap<User, Integer> determineWinners() {
+    public HashMap<User, Integer> determineWinners() {
         int max = findHighestScore();
-        System.out.println(max);
         HashMap<User,Integer> winners = new HashMap<>();
         for (Map.Entry<User, Integer> entry : userTotalPoints.entrySet()){
             if (entry.getValue() == max){
@@ -71,6 +58,11 @@ public class Game {
         return max;
     }
 
+    public void leaveGame(User user) {
+        userRoundPoints.remove(user);
+        userTotalPoints.remove(user);
+        moveList.remove(user);
+    }
 
     private void rewardPlayers(){
         for (User user : lobby.getUserList()){ //Reset round rewards
@@ -110,17 +102,23 @@ public class Game {
                         break;
                 }
             }
-            System.out.println("User: " + user.getUsername() + " receives " + points + " for a total of " + (userTotalPoints.get(user) + points) + " points!");
             givePoints(user, points);
         }
-
+        moveList.clear();
     }
 
     private void givePoints(User user, int points){
         userRoundPoints.put(user, points);
         int previousPoints = userTotalPoints.get(user);
         userTotalPoints.put(user, (previousPoints + points));
+    }
 
+    public ArrayList<User> userWhoMadeTheirMoves() {
+        return new ArrayList<>(moveList.keySet());
+    }
+
+    boolean isGameFinished() {
+        return roundsPlayed == roundsToPlay;
     }
 
 
