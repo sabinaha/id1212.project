@@ -82,6 +82,7 @@ public class ClientController extends UnicastRemoteObject implements Client {
                     ServerInfo lobbies = server.listLobbies(token);
                     if (lobbies == null)
                         return;
+                    System.out.println("CURRENT LOBBIES");
                     for (String l : lobbies.getLobbyNames()) {
                         System.out.println("• " + l);
                     }
@@ -118,6 +119,7 @@ public class ClientController extends UnicastRemoteObject implements Client {
                     if (players == null){
                         return;
                     }
+                    System.out.println("PLAYERS IN LOBBY");
                     for (String s : players.getUsersInLobby()) {
                         System.out.println("• " + s);
                     }
