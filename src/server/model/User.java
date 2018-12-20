@@ -38,6 +38,11 @@ public class User {
 
     @Override
     public String toString() {
-        return String.format("User: %s", username);
+        return "User{" +
+                "username='" + username + '\'' +
+                ", token=" + token +
+                ", clientRef=" + clientRef +
+                ", inLobbyName='" + inLobbyName + '\'' +
+                '}';
     }
 }

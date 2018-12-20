@@ -34,4 +34,13 @@ public class Lobby {
     public ArrayList<User> getUserList() {
         return userList;
     }
+
+    @Override
+    public String toString() {
+        return "Lobby{" +
+                "name='" + name + '\'' +
+                ", userList=" + userList +
+                ", owner=" + owner +
+                '}';
+    }
 }
