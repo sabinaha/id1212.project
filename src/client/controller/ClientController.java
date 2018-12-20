@@ -204,6 +204,7 @@ public class ClientController extends UnicastRemoteObject implements Client {
 
     @Override
     public void displayInfo(Object object) {
+        System.out.println(object);
         if (object instanceof GameInfo) {
             String s = "";
             GameInfo gameInfo = (GameInfo) object;
