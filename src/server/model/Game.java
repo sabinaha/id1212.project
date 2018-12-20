@@ -42,6 +42,8 @@ public class Game {
             for (Map.Entry<User, Integer> entry : winners.entrySet()){
                 System.out.println("Winner: " + entry.getKey().getUsername() + " with score: " + entry.getValue());
             }
+        }else{
+            System.out.println("rip");
         }
 
 
@@ -49,7 +51,8 @@ public class Game {
 
     private HashMap<User, Integer> determineWinners() {
         int max = findHighestScore();
-        HashMap<User,Integer> winners = null;
+        System.out.println(max);
+        HashMap<User,Integer> winners = new HashMap<>();
         for (Map.Entry<User, Integer> entry : userTotalPoints.entrySet()){
             if (entry.getValue() == max){
                 winners.put(entry.getKey(), entry.getValue());
@@ -107,7 +110,7 @@ public class Game {
                         break;
                 }
             }
-            System.out.println("User: " + user.getUsername() + "receives " + points + " for a total of " + (userTotalPoints.get(user) + points) + " points!");
+            System.out.println("User: " + user.getUsername() + " receives " + points + " for a total of " + (userTotalPoints.get(user) + points) + " points!");
             givePoints(user, points);
         }
 
