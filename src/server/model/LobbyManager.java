@@ -5,10 +5,7 @@ import server.exceptions.LobbyAlreadyExistsException;
 import server.exceptions.LobbyDontExistException;
 import server.exceptions.UserNotInLobbyException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class LobbyManager {
 
@@ -52,6 +49,6 @@ public class LobbyManager {
     }
 
     synchronized public ArrayList<String> getLobbyNames() {
-        return (ArrayList<String>) lobbies.keySet();
+        return new ArrayList<>(lobbies.keySet());
     }
 }
