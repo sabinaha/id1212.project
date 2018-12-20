@@ -204,6 +204,9 @@ public class ClientController extends UnicastRemoteObject implements Client {
             case LOGIN_SUCCESSFUL:
                 s = "Login successful!";
                 break;
+            case LOGIN_INCORRECT_CRED:
+                s = "The username or password was wrong. Try again!";
+                break;
             case LOBBY_CREATE_SUCCESS:
                 s = "Lobby was successfully created!";
                 break;
@@ -227,9 +230,6 @@ public class ClientController extends UnicastRemoteObject implements Client {
                 break;
             case LOBBY_GAME_ONGOING_ERROR:
                 s = "A game is already ongoing, you can't join at the moment. Try again later!";
-                break;
-            case LOGIN_INCORRECT_CRED:
-                s = "The username or password was wrong. Try again!";
                 break;
             case REG_DUPL_USERNAME:
                 s = "That username already exists!";
