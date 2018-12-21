@@ -1,8 +1,6 @@
 package server.integration;
 
-import server.exceptions.GetStatsException;
 import server.exceptions.IncorrectCredentialsException;
-import server.exceptions.UpdateStatsException;
 import server.exceptions.UserAlreadyExistsException;
 import shared.UserCredential;
 
@@ -38,8 +36,9 @@ public class DB {
             connection = DriverManager.getConnection(URL, MYSQL_USERNAME, MYSQL_PASSWORD);
             connection.setAutoCommit(true);
         } catch (Exception e) {
-            System.out.println("Database connection error!");
+            System.err.println("Database connection error!");
             e.printStackTrace();
+            System.exit(1);
         }
     }
 
@@ -52,7 +51,9 @@ public class DB {
         try {
             lines = Files.readAllLines(Paths.get(".." + File.separator + "db_credentials.txt"));
         } catch (IOException e) {
-            System.out.println("Could not read read word from file.");
+            System.err.println("Could not read database, a file containing username or first row and password on the" +
+                    "second row should be located one level above the root directory of the source.");
+            System.exit(1);
             e.printStackTrace();
         }
         return new String[] {lines.get(0), lines.get(1)};
@@ -76,6 +77,7 @@ public class DB {
             ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            System.exit(1);
         }
 
         if (exists) {
@@ -109,6 +111,7 @@ public class DB {
             ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            System.exit(1);
         }
     }
 
@@ -132,63 +135,5 @@ public class DB {
             e.printStackTrace();
             throw new IncorrectCredentialsException(e);
         }
-    }
-    public void updateWin(String username) throws UpdateStatsException {
-        updateStats(username, true);
-    }
-    public void updateLoss(String username) throws UpdateStatsException {
-        updateStats(username, false);
-    }
-
-    private void updateStats(String username, Boolean isWin) throws UpdateStatsException {
-        PreparedStatement ps;
-        String query;
-        if (isWin) {
-            query = ("UPDATE stats SET wins = wins + 1 WHERE userID = (SELECT id FROM user WHERE username = ?)");
-        }else{
-            query = ("UPDATE stats SET losses = losses + 1 WHERE userID = (SELECT id FROM user WHERE username = ?)");
-        }
-        try {
-            ps = connection.prepareStatement(query);
-            ps.setString(1, username);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new UpdateStatsException(e);
-        }
-
-    }
-
-    public int getWins(String username) throws GetStatsException {
-        return getStats(username, true);
-    }
-    public int getLoss(String username) throws GetStatsException {
-        return getStats(username, false);
-    }
-
-    private int getStats(String username, boolean isWin) throws GetStatsException {
-        PreparedStatement ps;
-        ResultSet rs;
-        String query;
-        if (isWin) {
-            query = ("SELECT wins FROM stats WHERE userID = (SELECT id FROM user WHERE username = ?");
-        }else{
-            query = ("SELECT losses FROM stats WHERE userID = (SELECT id FROM user WHERE username = ?");
-        }
-
-        try {
-            ps = connection.prepareStatement(query);
-            ps.setString(1, username);
-            rs = ps.executeQuery();
-
-            if (!rs.next()){
-                throw new GetStatsException();
-            }
-            return rs.getInt(0);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new GetStatsException(e);
-        }
-
     }
 }
