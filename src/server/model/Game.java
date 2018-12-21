@@ -173,7 +173,6 @@ public class Game {
 
     boolean isGameFinished() {
         return gameIsDone;
-//        return roundsPlayed + 1 == roundsToPlay;
     }
 
 

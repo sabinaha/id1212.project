@@ -330,6 +330,9 @@ public class ClientController extends UnicastRemoteObject implements Client {
             case GAME_NO_ONGOING_GAME:
                 s = "There is no ongoing game at the moment.";
                 break;
+            case GAME_CANT_START_SOLO:
+                s = "You have to wait for other players!";
+                break;
             default:
                 s = response.toString();
         }

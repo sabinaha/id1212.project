@@ -68,7 +68,6 @@ public class ServerController extends UnicastRemoteObject implements Server {
         try {
             lobbyManager.createNewLobby(lobbyName, user);
         } catch (LobbyAlreadyExistsException e) {
-            e.printStackTrace();
             userManager.getClientRef(token).receiveResponse(Response.LOBBY_ALREADY_EXISTS);
             return;
         }
@@ -218,12 +217,11 @@ public class ServerController extends UnicastRemoteObject implements Server {
      */
     @Override
     public Token login(UserCredential uc, Client client) throws RemoteException {
-        Token token = null;
+        Token token;
         try {
             DB.getDB().login(uc);
             token = userManager.addUser(uc.getUsername(), client);
         } catch (IncorrectCredentialsException e) {
-            e.printStackTrace();
             client.receiveResponse(Response.LOGIN_INCORRECT_CRED);
             return null;
         }
