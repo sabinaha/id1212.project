@@ -1,9 +1,7 @@
 package server.model;
 
-import server.exceptions.GameOngoingException;
 import server.exceptions.LobbyAlreadyExistsException;
 import server.exceptions.LobbyDontExistException;
-import server.exceptions.UserNotInLobbyException;
 
 import java.util.*;
 
@@ -11,44 +9,44 @@ public class LobbyManager {
 
     Map<String, Lobby> lobbies = new HashMap<>();
 
-    synchronized public void createNewLobby(String name, User creator) throws LobbyAlreadyExistsException {
+    public synchronized void createNewLobby(String name, User creator) throws LobbyAlreadyExistsException {
         if (lobbies.containsKey(name))
             throw new LobbyAlreadyExistsException();
         lobbies.put(name, new Lobby(name, creator));
         creator.setLobby(name);
     }
 
-    synchronized public void deleteLobby(String name) {
-        lobbies.remove(name);
-    }
-
-    synchronized public ArrayList<String > getAllLobbies() {
-        ArrayList<String> list = new ArrayList<>();
-        for (Map.Entry<String, Lobby> entry : lobbies.entrySet()) {
-            list.add(entry.getValue().getName());
-        }
-        return list;
-    }
+//    public synchronized ArrayList<String > getAllLobbies() {
+//        ArrayList<String> list = new ArrayList<>();
+//        for (Map.Entry<String, Lobby> entry : lobbies.entrySet()) {
+//            list.add(entry.getValue().getName());
+//        }
+//        return list;
+//    }
 
     public synchronized void leaveLobby(User user) {
         if (!lobbies.containsKey(user.getLobby()))
             return;
-        lobbies.get(user.getLobby()).removeUser(user);
+        Lobby lobby = lobbies.get(user);
+        lobby.removeUser(user);
+        if (lobby.getUserList().size() == 0) {
+            lobbies.remove(lobby);
+        }
         user.setLobby(null);
     }
 
-    synchronized public void joinLobby(String lobby, User user) throws LobbyDontExistException {
+    public synchronized void joinLobby(String lobby, User user) throws LobbyDontExistException {
         if (!lobbies.containsKey(lobby))
             throw new LobbyDontExistException();
         lobbies.get(lobby).addUser(user);
         user.setLobby(lobby);
     }
 
-    synchronized public Lobby getLobby(User user) {
+    public synchronized Lobby getLobby(User user) {
         return lobbies.get(user.getLobby());
     }
 
-    synchronized public ArrayList<String> getLobbyNames() {
+    public synchronized ArrayList<String> getLobbyNames() {
         return new ArrayList<>(lobbies.keySet());
     }
 }
