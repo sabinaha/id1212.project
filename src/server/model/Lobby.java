@@ -19,10 +19,6 @@ public class Lobby {
         owner = user;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public void addUser(User user) {
         userList.add(user);
     }

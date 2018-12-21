@@ -146,8 +146,10 @@ public class ClientController extends UnicastRemoteObject implements Client {
      */
     private void listAllLobbies() throws RemoteException {
         ServerInfo lobbies = server.listLobbies(token);
-        if (lobbies == null)
+        if (lobbies.getLobbyNames().size() == 0) {
+            System.out.println("No current lobbies");
             return;
+        }
         System.out.println("CURRENT LOBBIES");
         for (String l : lobbies.getLobbyNames()) {
             System.out.println("• " + l);
