@@ -6,7 +6,6 @@ import shared.Weapon;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static shared.Weapon.PAPER;
 import static shared.Weapon.ROCK;

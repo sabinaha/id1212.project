@@ -27,10 +27,10 @@ public class LobbyManager {
     public synchronized void leaveLobby(User user) {
         if (!lobbies.containsKey(user.getLobby()))
             return;
-        Lobby lobby = lobbies.get(user);
+        Lobby lobby = lobbies.get(user.getLobby());
         lobby.removeUser(user);
         if (lobby.getUserList().size() == 0) {
-            lobbies.remove(lobby);
+            lobbies.remove(user.getLobby());
         }
         user.setLobby(null);
     }
