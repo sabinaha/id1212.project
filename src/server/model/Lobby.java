@@ -10,8 +10,8 @@ public class Lobby {
 
     /**
      * Creates a Lobby, with the user who created the lobby.
-     * @param name
-     * @param user
+     * @param name The name of the lobby to craete.
+     * @param user The user who created it.
      */
     public Lobby(String name, User user) {
         this.name = name;

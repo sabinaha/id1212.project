@@ -13,7 +13,6 @@ public enum Response implements Serializable {
     // REGISTRY
     REG_SUCCESSFUL,
     REG_DUPL_USERNAME,
-    REG_FAILED,
 
     //LOBBY
     LOBBY_CREATE_SUCCESS,

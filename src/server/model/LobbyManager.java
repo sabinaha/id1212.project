@@ -16,14 +16,6 @@ public class LobbyManager {
         creator.setLobby(name);
     }
 
-//    public synchronized ArrayList<String > getAllLobbies() {
-//        ArrayList<String> list = new ArrayList<>();
-//        for (Map.Entry<String, Lobby> entry : lobbies.entrySet()) {
-//            list.add(entry.getValue().getName());
-//        }
-//        return list;
-//    }
-
     public synchronized void leaveLobby(User user) {
         if (!lobbies.containsKey(user.getLobbyName()))
             return;
