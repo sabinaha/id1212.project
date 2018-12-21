@@ -111,12 +111,10 @@ public class Game {
             givePoints(user, points);
         }
         buildGameInfos();
-        System.out.printf("gameStates.size=%d\n", gameStates.size());
         moveList.clear();
     }
 
     private void buildGameInfos() {
-        System.out.println("Entering buildGameInfo");
         for (User user : userRoundPoints.keySet()) {
             int roundScore, totalScore, round = roundsPlayed, ofRounds = ROUNDS;
             roundScore = userRoundPoints.get(user);
@@ -149,7 +147,6 @@ public class Game {
                         state = GameInfo.State.DRAW;
                     break;
             }
-            System.out.println("PUTTING");
             GameInfo.State didIWin = determineWinners().containsKey(user) ? GameInfo.State.WON : GameInfo.State.LOST;
             didIWin = determineWinners().size() > 1 ? GameInfo.State.DRAW : didIWin;
             gameStates.put(user, new GameInfo(roundScore, totalScore, round, ofRounds, state, (roundsPlayed + 1) == ROUNDS, didIWin));

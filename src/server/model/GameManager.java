@@ -3,7 +3,6 @@ package server.model;
 import shared.GameInfo;
 import shared.Weapon;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GameManager {
