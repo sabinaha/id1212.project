@@ -49,7 +49,8 @@ public class ServerController extends UnicastRemoteObject implements Server {
     private void assertInGame(Token token) throws RemoteException {
         assertInLobby(token);
         User user = userManager.getUserByToken(token);
-        if (!lobbyManager.getLobby(user).getUserList().contains(user)) //TODO: Den här kollar väl bara om användaren är i en lobby????
+        Lobby lobby = lobbyManager.getLobby(user);
+        if (gameManager.getGame(lobby) != null && lobby.getUserList().contains(user))
             throw new RemoteException("This user is not in game", new UserNotInGameException());
     }
 
