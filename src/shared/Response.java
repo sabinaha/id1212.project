@@ -29,5 +29,6 @@ public enum Response implements Serializable {
     GAME_STARTED,
     GAME_DONE,
     GAME_PROMPT_ACTION,
-    GAME_NO_ONGOING_GAME
+    GAME_NO_ONGOING_GAME,
+    GAME_CANT_START_SOLO
 }

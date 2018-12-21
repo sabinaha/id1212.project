@@ -46,6 +46,10 @@ public class LobbyManager {
         return lobbies.get(user.getLobbyName());
     }
 
+    public synchronized Lobby getLobbyByName(String lobbyName) {
+        return lobbies.get(lobbyName);
+    }
+
     public synchronized ArrayList<String> getLobbyNames() {
         return new ArrayList<>(lobbies.keySet());
     }

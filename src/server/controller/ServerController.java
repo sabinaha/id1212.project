@@ -86,6 +86,13 @@ public class ServerController extends UnicastRemoteObject implements Server {
         assertLoggedIn(token);
         User user = userManager.getUserByToken(token);
         try {
+            Lobby lobby = lobbyManager.getLobbyByName(lobbyName);
+            if (gameManager.getGame(lobby) != null) {
+                if (!gameManager.gameIsOver(lobby)) {
+                    userManager.getClientRef(token).receiveResponse(Response.LOBBY_GAME_ONGOING_ERROR);
+                    return;
+                }
+            }
             lobbyManager.joinLobby(lobbyName, user);
         } catch (LobbyDontExistException e) {
             e.printStackTrace();
@@ -128,6 +135,10 @@ public class ServerController extends UnicastRemoteObject implements Server {
         assertInLobby(token);
         User user = userManager.getUserByToken(token);
         Lobby lobby = lobbyManager.getLobby(user);
+        if (lobby.getUserList().size() == 1){
+            userManager.getClientRef(token).receiveResponse(Response.GAME_CANT_START_SOLO);
+            return;
+        }
         gameManager.startGame(lobby);
         userManager.getClientRef(token).receiveResponse(Response.GAME_STARTED);
 

@@ -17,6 +17,7 @@ public class Game {
     private Map<User, GameInfo> gameStates = new HashMap<>();
     private int roundsToPlay;
     private int roundsPlayed;
+    private boolean gameIsDone = false;
 
     private final static int ROUNDS = 2;
 
@@ -35,7 +36,8 @@ public class Game {
         synchronized (this) {
             if (userMoves.size() == userTotalPoints.size()) {
                 calculateRound();
-                roundsPlayed++;
+                if (++roundsPlayed == roundsToPlay)
+                    gameIsDone = true;
                 buildGameInfos();
                 userMoves.clear();
             }
@@ -69,7 +71,7 @@ public class Game {
         userMoves.remove(user);
         gameStates.remove(user);
         if (userRoundPoints.size() == 1) {
-            roundsPlayed = roundsToPlay - 1;
+            gameIsDone = true;
             buildGameInfos();
         }
     }
@@ -155,7 +157,7 @@ public class Game {
                 didIWin = GameInfo.State.WON;
                 state = GameInfo.State.WON;
             }
-            gameStates.put(user, new GameInfo(roundScore, totalScore, round, ROUNDS, state, roundsPlayed == (ROUNDS - 1) , didIWin));
+            gameStates.put(user, new GameInfo(roundScore, totalScore, round, ROUNDS, state, gameIsDone , didIWin));
         }
     }
 
@@ -170,7 +172,8 @@ public class Game {
     }
 
     boolean isGameFinished() {
-        return roundsPlayed + 1 == roundsToPlay;
+        return gameIsDone;
+//        return roundsPlayed + 1 == roundsToPlay;
     }
 
 
