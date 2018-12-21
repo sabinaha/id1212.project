@@ -259,7 +259,7 @@ public class ClientController extends UnicastRemoteObject implements Client {
     private String printGameInfo(GameInfo gameInfo) {
         int roundScore = gameInfo.getRoundScore();
         int totalScore = gameInfo.getTotalScore();
-        int currentRound = gameInfo.getRound() + 1;
+        int currentRound = gameInfo.getRound();
         int totalRounds = gameInfo.getOfRounds();
 
         String s;

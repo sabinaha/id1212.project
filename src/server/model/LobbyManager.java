@@ -25,12 +25,12 @@ public class LobbyManager {
 //    }
 
     public synchronized void leaveLobby(User user) {
-        if (!lobbies.containsKey(user.getLobby()))
+        if (!lobbies.containsKey(user.getLobbyName()))
             return;
-        Lobby lobby = lobbies.get(user.getLobby());
+        Lobby lobby = lobbies.get(user.getLobbyName());
         lobby.removeUser(user);
         if (lobby.getUserList().size() == 0) {
-            lobbies.remove(user.getLobby());
+            lobbies.remove(user.getLobbyName());
         }
         user.setLobby(null);
     }
@@ -43,7 +43,7 @@ public class LobbyManager {
     }
 
     public synchronized Lobby getLobby(User user) {
-        return lobbies.get(user.getLobby());
+        return lobbies.get(user.getLobbyName());
     }
 
     public synchronized ArrayList<String> getLobbyNames() {

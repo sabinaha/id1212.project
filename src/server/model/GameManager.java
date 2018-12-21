@@ -36,4 +36,8 @@ public class GameManager {
     synchronized public boolean isStartOfRound(Lobby lobby) {
         return games.get(lobby).userWhoMadeTheirMoves().size() == 0;
     }
+
+    public synchronized void leaveGame(User user, Lobby lobby) {
+        games.get(lobby).leaveGame(user);
+    }
 }

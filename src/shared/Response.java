@@ -9,7 +9,6 @@ public enum Response implements Serializable {
     // LOGIN
     LOGIN_SUCCESSFUL,
     LOGIN_INCORRECT_CRED,
-    LOGIN_FAILED,
 
     // REGISTRY
     REG_SUCCESSFUL,
@@ -29,5 +28,6 @@ public enum Response implements Serializable {
     //GAME
     GAME_STARTED,
     GAME_DONE,
-    GAME_PROMPT_ACTION
+    GAME_PROMPT_ACTION,
+    GAME_NO_ONGOING_GAME
 }

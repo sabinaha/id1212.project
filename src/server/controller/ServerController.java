@@ -37,7 +37,7 @@ public class ServerController extends UnicastRemoteObject implements Server {
      */
     private void assertInLobby(Token token) throws RemoteException {
         assertLoggedIn(token);
-        if (userManager.getUserByToken(token).getLobby() == null)
+        if (userManager.getUserByToken(token).getLobbyName() == null)
             throw new RemoteException("You must be in a lobby to do this.", new UserNotInLobbyException());
     }
 
@@ -104,11 +104,22 @@ public class ServerController extends UnicastRemoteObject implements Server {
     public void leaveLobby(Token token) throws RemoteException {
         assertInLobby(token);
         User user = userManager.getUserByToken(token);
-        if (user.getLobby() == null)
+        if (user.getLobbyName() == null)
             userManager.getClientRef(token).receiveResponse(Response.LOBBY_USER_NOT_IN_LOBBY);
         else {
+            leaveGameIfOngoing(user);
             lobbyManager.leaveLobby(user);
             userManager.getClientRef(token).receiveResponse(Response.LOBBY_LEAVE_SUCCESSFUL);
+        }
+    }
+
+    private void leaveGameIfOngoing(User user) throws RemoteException {
+        Lobby lobby = lobbyManager.getLobby(user);
+        if (gameManager.getGame(lobby) != null) {
+            gameManager.leaveGame(user, lobby);
+            if (gameManager.gameIsOver(lobby)) {
+                sendPostRoundInfo(lobby);
+            }
         }
     }
 
@@ -142,6 +153,10 @@ public class ServerController extends UnicastRemoteObject implements Server {
         assertInGame(token);
         User user = userManager.getUserByToken(token);
         Lobby lobby = lobbyManager.getLobby(user);
+        if (gameManager.gameIsOver(lobby)) {
+            userManager.getClientRef(token).receiveResponse(Response.GAME_NO_ONGOING_GAME);
+            return;
+        }
         gameManager.makeMove(user, lobby, weapon);
         if (gameManager.gameIsOver(lobby)) {
             sendPostRoundInfo(lobby);
@@ -172,7 +187,7 @@ public class ServerController extends UnicastRemoteObject implements Server {
     public LobbyInfo listPlayers(Token token) throws RemoteException {
         assertInLobby(token);
         User user = userManager.getUserByToken(token);
-        if (user.getLobby() == null) {
+        if (user.getLobbyName() == null) {
             userManager.getClientRef(token).receiveResponse(Response.LOBBY_USER_NOT_IN_LOBBY);
             return null;
         }
@@ -210,10 +225,12 @@ public class ServerController extends UnicastRemoteObject implements Server {
      * @param token The token to identify the user by.
      */
     @Override
-    public void quit(Token token) {
+    public void quit(Token token) throws RemoteException {
         User user = userManager.getUserByToken(token);
-        if (user.getLobby() != null)
+        if (user.getLobbyName() != null) {
+            leaveGameIfOngoing(user);
             lobbyManager.leaveLobby(user);
+        }
         if (userManager.hasUser(token))
             userManager.logoutUser(user);
     }

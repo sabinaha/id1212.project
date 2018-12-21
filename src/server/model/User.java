@@ -32,7 +32,7 @@ public class User {
         inLobbyName = lobby;
     }
 
-    public String getLobby() {
+    public String getLobbyName() {
         return inLobbyName;
     }
 
